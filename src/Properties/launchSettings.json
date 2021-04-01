@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Twitch.Stream": {
+      "commandName": "Project",
+      "commandLineArgs": "-d v877072759"
+    }
+  }
+}
