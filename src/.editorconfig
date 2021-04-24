@@ -13,7 +13,7 @@ tab_width = 3
 
 # New line preferences
 end_of_line = crlf
-insert_final_newline = false
+insert_final_newline =true
 
 #### .NET Coding Conventions ####
 
@@ -76,7 +76,7 @@ csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
 csharp_style_expression_bodied_methods = false:suggestion
 csharp_style_expression_bodied_operators = false:suggestion
-csharp_style_expression_bodied_properties = true:suggestion
+csharp_style_expression_bodied_properties =true:silent
 
 # Pattern matching preferences
 csharp_style_pattern_matching_over_as_with_null_check = true:suggestion
@@ -248,3 +248,6 @@ dotnet_naming_style.async_methods.required_prefix =
 dotnet_naming_style.async_methods.required_suffix = Async
 dotnet_naming_style.async_methods.word_separator = 
 dotnet_naming_style.async_methods.capitalization = pascal_case
+
+[*.{cs,vb}]
+dotnet_style_predefined_type_for_locals_parameters_members=false:silent

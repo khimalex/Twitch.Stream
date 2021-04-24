@@ -58,7 +58,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          //      }}
          //}}";
 
-         var postData = BuildTwitchGqlQuery(channelName: channelName);
+         String postData = BuildTwitchGqlQuery(channelName: channelName);
 
          var request = new HttpRequestMessage(new HttpMethod("POST"), _twitchGQL);
          request.Content = new StringContent(postData);
@@ -66,11 +66,11 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          var response = await _client.SendAsync(request);
          if (!response.IsSuccessStatusCode)
          {
-            var failResponse = await response.Content.ReadAsStringAsync();
+            String failResponse = await response.Content.ReadAsStringAsync();
             throw new Exception($"Не удалось получить данные для канала '{channelName}', ответ Twitch '{failResponse}'");
          }
 
-         var successResponse = await response.Content.ReadAsStringAsync();
+         String successResponse = await response.Content.ReadAsStringAsync();
          var twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(successResponse);
 
          return _mapper.Map<TwitchAuthDto>(twitchAuth);
@@ -90,7 +90,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          var response = await _client.SendAsync(request);
          if (!response.IsSuccessStatusCode)
          {
-            var responseBody = await response.Content.ReadAsStringAsync();
+            String responseBody = await response.Content.ReadAsStringAsync();
             throw new HttpRequestException($@"Не найден пользователь '{channelName}'. Статус ошибки: {(Int32)response.StatusCode,15}. Ответ Twitch: {responseBody}");
          }
 
@@ -179,7 +179,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          //      }}
          //}}";
 
-         var postData = BuildTwitchGqlQuery(videoId: videoId);
+         String postData = BuildTwitchGqlQuery(videoId: videoId);
 
          var request1 = new HttpRequestMessage(new HttpMethod("POST"), _twitchGQL);
          request1.Content = new StringContent(postData);
@@ -187,10 +187,10 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          var response1 = await _client.SendAsync(request1);
          if (!response1.IsSuccessStatusCode)
          {
-            var resp = await response1.Content.ReadAsStringAsync();
+            String resp = await response1.Content.ReadAsStringAsync();
             throw new Exception($"Не удалось получить данные для видео '{videoId}'");
          }
-         var resp1 = await response1.Content.ReadAsStringAsync();
+         String resp1 = await response1.Content.ReadAsStringAsync();
 
          var twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(resp1);
 
@@ -198,11 +198,11 @@ namespace Twitch.Stream.Services.ApiTwitchTv
       }
 
 
-      private string BuildTwitchGqlQuery(String channelName = null, String videoId = null)
+      private String BuildTwitchGqlQuery(String channelName = null, String videoId = null)
       {
-         var query = @"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) {  streamPlaybackAccessToken(channelName: $login, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}";
+         String query = @"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) {  streamPlaybackAccessToken(channelName: $login, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}";
 
-         var postData = $@"{{
+         String postData = $@"{{
          ""operationName"": ""PlaybackAccessToken_Template"",
          ""query"": ""{query}"",
             ""variables"": {{

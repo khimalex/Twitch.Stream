@@ -3,7 +3,7 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Stream.Services.ApiTwitchTv
 {
-   interface IApiTwitchTv
+   internal interface IApiTwitchTv
    {
       Task<TwitchAuthDto> GetChannelTwitchAuthAsync(System.String channelName);
       Task<UsersDto> GetUserInfoAsync(System.String channelName);

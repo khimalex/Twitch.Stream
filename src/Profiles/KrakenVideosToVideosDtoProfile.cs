@@ -4,7 +4,7 @@ using Twitch.Stream.Services.ApiTwitchTv.KrakenModels;
 
 namespace Twitch.Stream.Profiles
 {
-   class KrakenVideosToVideosDtoProfile : Profile
+   internal class KrakenVideosToVideosDtoProfile : Profile
    {
       public KrakenVideosToVideosDtoProfile()
       {

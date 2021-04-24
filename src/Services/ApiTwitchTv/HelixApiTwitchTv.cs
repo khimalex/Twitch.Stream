@@ -4,13 +4,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Twitch.Stream.Dto;
 using Twitch.Stream.Services.ApiTwitchTv.HelixModels;
 
 namespace Twitch.Stream.Services.ApiTwitchTv
 {
-   class HelixApiTwitchTv : IApiTwitchTv
+   internal class HelixApiTwitchTv : IApiTwitchTv
    {
       //private readonly String _channelsAuthStringFormat = @"/api/channels/{0}/access_token";
       private readonly HttpClient _client;
@@ -32,9 +31,9 @@ namespace Twitch.Stream.Services.ApiTwitchTv
             throw new ArgumentException("Название канала не может быть пустым", nameof(channelName));
          }
 
-         var query = @"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) {  streamPlaybackAccessToken(channelName: $login, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}";
+         String query = @"query PlaybackAccessToken_Template($login: String!, $isLive: Boolean!, $vodID: ID!, $isVod: Boolean!, $playerType: String!) {  streamPlaybackAccessToken(channelName: $login, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isLive) {    value    signature    __typename  }  videoPlaybackAccessToken(id: $vodID, params: {platform: \""web\"", playerBackend: \""mediaplayer\"", playerType: $playerType}) @include(if: $isVod) {    value    signature    __typename  }}";
 
-         var postData = $@"{{
+         String postData = $@"{{
          ""operationName"": ""PlaybackAccessToken_Template"",
          ""query"": ""{query}"",
             ""variables"": {{
@@ -50,10 +49,10 @@ namespace Twitch.Stream.Services.ApiTwitchTv
 
          if (!resp.IsSuccessStatusCode)
          {
-            var rsp1 = await resp.Content.ReadAsStringAsync();
+            String rsp1 = await resp.Content.ReadAsStringAsync();
             throw new Exception($"Не удалось получить данные для канала '{channelName}'");
          }
-         var rsp = await resp.Content.ReadAsStringAsync();
+         String rsp = await resp.Content.ReadAsStringAsync();
 
          var twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(rsp);
 

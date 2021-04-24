@@ -1,5 +1,4 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Twitch.Stream.Services.ApiTwitchTv.KrakenModels
 {

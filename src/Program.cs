@@ -1,25 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using AutoMapper;
-using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Twitch.Stream.CommandBuilders;
+using Twitch.Stream.Commands;
 using Twitch.Stream.Profiles;
 using Twitch.Stream.Services.ApiTwitchTv;
 using Twitch.Stream.Services.UsherTwitchTv;
 
 namespace Twitch.Stream
 {
-   class Program
+   internal class Program
    {
-      static async Task Main(String[] args)
+      private static async Task Main(String[] args)
       {
 
+         var sw = new Stopwatch();
+         sw.Start();
          var builder = Host.CreateDefaultBuilder().UseConsoleLifetime()
             .ConfigureHostConfiguration(b =>
             {
@@ -48,10 +47,10 @@ namespace Twitch.Stream
 
                });
                //todo: какую-нибудь бы фабричку
-               services.AddScoped<App.IApp, App.DownloadStreams>();
-               services.AddScoped<App.IApp, App.DownloadInfo>();
-               services.AddScoped<App.IApp, App.DownloadVod>();
-               services.AddScoped<App.IApp, App.DownloadLast>();
+               services.AddScoped<IApp, DownloadStreams>();
+               services.AddScoped<IApp, DownloadInfo>();
+               services.AddScoped<IApp, DownloadVod>();
+               services.AddScoped<IApp, DownloadLast>();
             })
             .ConfigureLogging(loggerBuilder =>
             {
@@ -64,78 +63,8 @@ namespace Twitch.Stream
                   c.IncludeScopes = true;
                });
             });
-         var host = builder.Build();
+         builder.RunCommandLineApplicationAsync<CommandsBuilder.ShortcutsBuilder>(args).GetAwaiter().GetResult();
 
-         var app = new CommandLineApplication
-         {
-            Name = @"Twitch.Streams",
-            Description = @"Загрузка стримов и водов"
-         };
-
-         var nameOption = app.Option("-n|--name", "Скачать конкретный стрим", CommandOptionType.SingleValue);
-         var infoOption = app.Option("-i|--info", "Получить информацию по последним видео для канала", CommandOptionType.SingleValue);
-         var idOptions = app.Option("-d|--download", "Скачать воды", CommandOptionType.MultipleValue);
-         var lastOption = app.Option("-l|--last", "Скачать последний по дате вод", CommandOptionType.SingleValue);
-
-         app.HelpOption("-?|-h|--help|--памагите");
-
-         app.OnExecuteAsync(async ct =>
-         {
-            var commandsTasks = new List<Task>();
-            Boolean anyLaunched = false;
-            if (nameOption.HasValue())
-            {
-               anyLaunched = true;
-               commandsTasks.Add(app.ExecuteAsync(new[] { DownloadStreamsBuilder._commandName, "-n", nameOption.Value() }, ct));
-
-            }
-            if (infoOption.HasValue())
-            {
-               anyLaunched = true;
-               commandsTasks.Add(app.ExecuteAsync(new[] { DownloadInfoBuilder._commandName, "-n", infoOption.Value() }, ct));
-            }
-            if (idOptions.HasValue())
-            {
-               anyLaunched = true;
-               var rebuildedArgs = new List<String> { DownloadVodBuilder._commandName };
-               foreach (String item in idOptions.Values)
-               {
-                  rebuildedArgs.Add("-id");
-                  rebuildedArgs.Add(item);
-               }
-               commandsTasks.Add(app.ExecuteAsync(rebuildedArgs.ToArray(), ct));
-
-            }
-            if (lastOption.HasValue())
-            {
-               anyLaunched = true;
-               commandsTasks.Add(app.ExecuteAsync(new[] { DownloadLastBuilder._commandName, "-n", lastOption.Value() }, ct));
-
-
-            }
-            if (!anyLaunched)
-            {
-               commandsTasks.Add(app.ExecuteAsync(new[] { DownloadStreamsBuilder._commandName }, ct));
-            }
-
-            await Task.WhenAll(commandsTasks);
-            return 0;
-         });
-
-         DownloadStreamsBuilder.Build(host, app);
-         DownloadInfoBuilder.Build(host, app);
-         DownloadVodBuilder.Build(host, app);
-         DownloadLastBuilder.Build(host, app);
-
-         var sw = new Stopwatch();
-         sw.Start();
-
-         await app.ExecuteAsync(args);
-
-         if (host is IDisposable disposable)
-         {
-            disposable.Dispose();
-         }
 
          sw.Stop();
          Console.WriteLine(sw.Elapsed);

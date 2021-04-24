@@ -6,7 +6,6 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
-using System;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
@@ -64,10 +63,10 @@ class Build : NukeBuild
    .Executes(() =>
    {
       string[] rids = new[] { "win-x64" }; // Перечисляем RID'ы, для которых собираем приложение
-      Logger.Info($"Сборка для систем: {String.Join(", ", rids)}");
+      Logger.Info($"Сборка для систем: {string.Join(", ", rids)}");
       DotNetPublish(s => s // Теперь вызываем dotnet publish
-           .SetVerbosity(DotNetVerbosity.Detailed)
-           .SetVersion("2.0.0.0")
+           .SetVerbosity(DotNetVerbosity.Normal)
+           .SetVersion("2.5.0.0")
            .SetProject(Solution.GetProject("Twitch.Stream")) // Для dotnet publish желательно указывать проект
            .SetPublishSingleFile(true) // Собираем в один файл
            .SetSelfContained(true)     // Вместе с рантаймом
