@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Twitch.Stream.Dto;
 using Twitch.Stream.Services.ApiTwitchTv;
 using Twitch.Stream.Services.UsherTwitchTv;
 
@@ -28,7 +29,7 @@ namespace Twitch.Stream.Commands
       public async Task RunAsync(CancellationToken token = default)
       {
          String channelName = _options.Streams.First();
-         var users = await _apiTwitch.GetUserInfoAsync(channelName);
+         UsersDto users = await _apiTwitch.GetUserInfoAsync(channelName);
          if (!users.Users.Any())
          {
             throw new Exception($"Не найден канал '{channelName}'.");
@@ -36,14 +37,14 @@ namespace Twitch.Stream.Commands
 
          String userId = users.Users[0].Id;
 
-         var videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
+         VideosDto videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
 
-         var lastVideo = videos.Videos.FirstOrDefault();
+         VideoDto lastVideo = videos.Videos.FirstOrDefault();
          if (lastVideo is null)
          {
             throw new Exception($"Не найдено последнего видео стримера '{channelName}'.");
          }
-         var vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(lastVideo.Id);
+         TwitchAuthDto vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(lastVideo.Id);
 
          String invalidFileName = $@"{lastVideo.Broadcast_type} {lastVideo.Channel.Name} {lastVideo.Game} {lastVideo.Created_at.ToLocalTime()}.m3u8";
          String validFileName = String.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));

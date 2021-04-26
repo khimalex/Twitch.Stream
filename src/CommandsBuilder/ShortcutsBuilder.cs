@@ -29,6 +29,8 @@ namespace Twitch.Stream.CommandsBuilder
       [Option("-d|--download", "Скачать видео из списка", CommandOptionType.MultipleValue)]
       public List<String> Ids { get; set; } = new List<String>();
 
+      //Not necessary parameter `CommandLineApplication`
+      //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
       public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
       {
 

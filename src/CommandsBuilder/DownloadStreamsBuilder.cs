@@ -25,7 +25,8 @@ namespace Twitch.Stream.CommandsBuilder
       public String Name { get; set; }
 
 
-
+      //Not necessary parameter `CommandLineApplication`
+      //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
       public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
       {
          Int32 result = 0;
@@ -33,11 +34,11 @@ namespace Twitch.Stream.CommandsBuilder
          {
             if (!String.IsNullOrEmpty(Name))
             {
-               var op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
+               IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
                op.Value.Streams = new[] { Name };
             }
 
-            var commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadStreams);
+            IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadStreams);
             await commandWorker.RunAsync(ct);
          }
          catch (Exception e)

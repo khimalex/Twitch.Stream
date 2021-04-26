@@ -14,7 +14,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
    {
       //private readonly String _channelsAuthStringFormat = @"/api/channels/{0}/access_token";
       private readonly String _twitchGQL = @"https://gql.twitch.tv/gql";
-      private readonly String _vodsAuthStringFormat = @"/api/vods/{0}/access_token";
+      //private readonly String _vodsAuthStringFormat = @"/api/vods/{0}/access_token";
 
       private readonly String _userInfoStringFormat = @"/kraken/users?login={0}";
       private readonly String _userVideosInfoStringFormat = @"/kraken/channels/{0}/videos?limit={1}&broadcast_type={2}";
@@ -60,10 +60,12 @@ namespace Twitch.Stream.Services.ApiTwitchTv
 
          String postData = BuildTwitchGqlQuery(channelName: channelName);
 
-         var request = new HttpRequestMessage(new HttpMethod("POST"), _twitchGQL);
-         request.Content = new StringContent(postData);
+         var request = new HttpRequestMessage(new HttpMethod("POST"), _twitchGQL)
+         {
+            Content = new StringContent(postData)
+         };
          request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientIDWeb);
-         var response = await _client.SendAsync(request);
+         HttpResponseMessage response = await _client.SendAsync(request);
          if (!response.IsSuccessStatusCode)
          {
             String failResponse = await response.Content.ReadAsStringAsync();
@@ -71,7 +73,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          }
 
          String successResponse = await response.Content.ReadAsStringAsync();
-         var twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(successResponse);
+         TwitchAuth twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(successResponse);
 
          return _mapper.Map<TwitchAuthDto>(twitchAuth);
       }
@@ -87,7 +89,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientID);
 
          //String request = String.Format(_userInfoStringFormat, channelName);
-         var response = await _client.SendAsync(request);
+         HttpResponseMessage response = await _client.SendAsync(request);
          if (!response.IsSuccessStatusCode)
          {
             String responseBody = await response.Content.ReadAsStringAsync();
@@ -95,9 +97,9 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          }
 
          String resultString = await response.Content.ReadAsStringAsync();
-         var users = JsonConvert.DeserializeObject<Users>(resultString);
+         Users users = JsonConvert.DeserializeObject<Users>(resultString);
 
-         var result = _mapper.Map<UsersDto>(users);
+         UsersDto result = _mapper.Map<UsersDto>(users);
          return result;
 
          //throw new System.NotImplementedException();
@@ -116,14 +118,14 @@ namespace Twitch.Stream.Services.ApiTwitchTv
 
 
          //String request = String.Format(_userVideosInfoStringFormat, userId, first, type);
-         var response = await _client.SendAsync(request);
+         HttpResponseMessage response = await _client.SendAsync(request);
          if (!response.IsSuccessStatusCode)
          {
             throw new HttpRequestException($@"Видео пользователя с идентификатором '{userId}' не загружены. Статус ошибки: {(Int32)response.StatusCode,15}.");
          }
          String str = await response.Content.ReadAsStringAsync();
-         var videos = JsonConvert.DeserializeObject<Videos>(str);
-         var dto = _mapper.Map<VideosDto>(videos);
+         Videos videos = JsonConvert.DeserializeObject<Videos>(str);
+         VideosDto dto = _mapper.Map<VideosDto>(videos);
          return dto;
       }
 
@@ -138,7 +140,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientIDWeb);
 
 
-         var response = await _client.SendAsync(request);
+         HttpResponseMessage response = await _client.SendAsync(request);
 
 
          //String request = String.Format(_videoInfoStringFormat, videoId);
@@ -149,9 +151,9 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          }
          String str = await response.Content.ReadAsStringAsync();
 
-         var video = JsonConvert.DeserializeObject<Video>(str);
+         Video video = JsonConvert.DeserializeObject<Video>(str);
          var videos = new Videos() { _total = 1, videos = new List<Video> { video } };
-         var dto = _mapper.Map<VideosDto>(videos);
+         VideosDto dto = _mapper.Map<VideosDto>(videos);
          return dto;
 
       }
@@ -181,10 +183,12 @@ namespace Twitch.Stream.Services.ApiTwitchTv
 
          String postData = BuildTwitchGqlQuery(videoId: videoId);
 
-         var request1 = new HttpRequestMessage(new HttpMethod("POST"), _twitchGQL);
-         request1.Content = new StringContent(postData);
+         var request1 = new HttpRequestMessage(new HttpMethod("POST"), _twitchGQL)
+         {
+            Content = new StringContent(postData)
+         };
          request1.Headers.TryAddWithoutValidation("Client-ID", _options.ClientIDWeb);
-         var response1 = await _client.SendAsync(request1);
+         HttpResponseMessage response1 = await _client.SendAsync(request1);
          if (!response1.IsSuccessStatusCode)
          {
             String resp = await response1.Content.ReadAsStringAsync();
@@ -192,7 +196,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          }
          String resp1 = await response1.Content.ReadAsStringAsync();
 
-         var twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(resp1);
+         TwitchAuth twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(resp1);
 
          return _mapper.Map<TwitchAuthDto>(twitchAuth);
       }

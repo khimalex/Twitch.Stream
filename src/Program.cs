@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -14,12 +15,17 @@ namespace Twitch.Stream
 {
    internal class Program
    {
-      private static async Task Main(String[] args)
+      private static void Main(String[] args)
+      {
+         MainAsync(args).GetAwaiter().GetResult();
+      }
+
+      private static async Task MainAsync(String[] args)
       {
 
          var sw = new Stopwatch();
          sw.Start();
-         var builder = Host.CreateDefaultBuilder().UseConsoleLifetime()
+         IHostBuilder builder = Host.CreateDefaultBuilder().UseConsoleLifetime()
             .ConfigureHostConfiguration(b =>
             {
                b.AddJsonFile("appsettings.json", true, true);
@@ -63,8 +69,9 @@ namespace Twitch.Stream
                   c.IncludeScopes = true;
                });
             });
-         builder.RunCommandLineApplicationAsync<CommandsBuilder.ShortcutsBuilder>(args).GetAwaiter().GetResult();
-
+         CommandLineApplication<CommandsBuilder.ShortcutsBuilder> app = null;
+         await builder.RunCommandLineApplicationAsync<CommandsBuilder.ShortcutsBuilder>(args, c => { app = c; });
+         app?.ShowHelp();
 
          sw.Stop();
          Console.WriteLine(sw.Elapsed);

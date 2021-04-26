@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Twitch.Stream.Dto;
 using Twitch.Stream.Services.ApiTwitchTv;
 
 namespace Twitch.Stream.Commands
@@ -23,7 +24,7 @@ namespace Twitch.Stream.Commands
       public async Task RunAsync(CancellationToken token = default)
       {
          String channelName = _options.Streams.First();
-         var users = await _apiTwitch.GetUserInfoAsync(channelName);
+         Dto.UsersDto users = await _apiTwitch.GetUserInfoAsync(channelName);
          if (!users.Users.Any())
          {
             throw new Exception($"Не найден канал '{channelName}'.");
@@ -31,9 +32,9 @@ namespace Twitch.Stream.Commands
 
          String userId = users.Users[0].Id;
 
-         var videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
+         VideosDto videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
          videos.Videos.Reverse();
-         foreach (var item in videos.Videos)
+         foreach (Dto.VideoDto item in videos.Videos)
          {
             Console.WriteLine($@"{"channel",15}: {item.Channel.Name}");
             Console.WriteLine($@"{"id",15}: {item.Id}");

@@ -1,3 +1,4 @@
+using System;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
@@ -12,7 +13,7 @@ using static Nuke.Common.Tools.DotNet.DotNetTasks;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
-class Build : NukeBuild
+internal class Build : NukeBuild
 {
    /// https://habr.com/ru/post/536208/ Быстрый старт
    /// https://habr.com/ru/post/537460/ Подробный мануал
@@ -22,18 +23,22 @@ class Build : NukeBuild
    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
    ///   - Microsoft VSCode           https://nuke.build/vscode
 
-   public static int Main() => Execute<Build>(x => x.Compile);
+   public static System.Int32 Main() => Execute<Build>(x => x.Compile);
 
    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-   readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+#pragma warning disable IDE1006 // Naming Styles
+   private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-   [Solution] readonly Solution Solution;
+   [Solution] private readonly Solution Solution;
+#pragma warning restore IDE1006 // Naming Styles
 
-   AbsolutePath SourceDirectory => RootDirectory / "src";
-   AbsolutePath TestsDirectory => RootDirectory / "tests";
-   AbsolutePath OutputDirectory => RootDirectory / "output";
+   private AbsolutePath SourceDirectory => RootDirectory / "src";
 
-   Target Clean => _ => _
+   private AbsolutePath TestsDirectory => RootDirectory / "tests";
+
+   private AbsolutePath OutputDirectory => RootDirectory / "output";
+
+   private Target Clean => _ => _
        .Before(Restore)
        .Executes(() =>
        {
@@ -42,14 +47,14 @@ class Build : NukeBuild
           EnsureCleanDirectory(OutputDirectory);
        });
 
-   Target Restore => _ => _
+   private Target Restore => _ => _
        .Executes(() =>
        {
           DotNetRestore(s => s
                .SetProjectFile(Solution));
        });
 
-   Target Compile => _ => _
+   private Target Compile => _ => _
        .DependsOn(Restore)
        .Executes(() =>
        {
@@ -58,12 +63,13 @@ class Build : NukeBuild
                .SetConfiguration(Configuration)
                .EnableNoRestore());
        });
-   Target Publish => _ => _
+
+   private Target Publish => _ => _
    .After(Restore)
    .Executes(() =>
    {
-      string[] rids = new[] { "win-x64" }; // Перечисляем RID'ы, для которых собираем приложение
-      Logger.Info($"Сборка для систем: {string.Join(", ", rids)}");
+      System.String[] rids = new[] { "win-x64" }; // Перечисляем RID'ы, для которых собираем приложение
+      Logger.Info($"Сборка для систем: {String.Join(", ", rids)}");
       DotNetPublish(s => s // Теперь вызываем dotnet publish
            .SetVerbosity(DotNetVerbosity.Normal)
            .SetVersion("2.5.0.0")

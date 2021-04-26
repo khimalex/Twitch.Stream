@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Twitch.Stream.Dto;
 using Twitch.Stream.Services.ApiTwitchTv;
 using Twitch.Stream.Services.UsherTwitchTv;
 
@@ -31,7 +32,7 @@ namespace Twitch.Stream.Commands
          //{
          //   _logger.LogWarning("Test: {i}", i);
          //}
-         var tasks = _optionsAccessor.Streams.Select(async user =>
+         System.Collections.Generic.IEnumerable<Task> tasks = _optionsAccessor.Streams.Select(async user =>
          {
             try
             {
@@ -42,7 +43,7 @@ namespace Twitch.Stream.Commands
                }
 
                //var twitchauth = await _helixApiTwitchTv.GetChannelTwitchAuthAsync(user);
-               var twitchauth = await _apiTwitch.GetChannelTwitchAuthAsync(user);
+               TwitchAuthDto twitchauth = await _apiTwitch.GetChannelTwitchAuthAsync(user);
                Byte[] stream = await _usherTwitch.GetStreamAsync(user, twitchauth);
                await File.WriteAllBytesAsync(fileName, stream);
                _logger.LogInformation("Стрим '{user}' загружен в '{file}'!", user, fileName);

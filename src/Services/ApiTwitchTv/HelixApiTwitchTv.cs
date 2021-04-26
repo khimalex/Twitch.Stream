@@ -45,7 +45,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
             }}
       }}";
 
-         var resp = await _client.PostAsync((String)null, new StringContent(postData));
+         HttpResponseMessage resp = await _client.PostAsync((String)null, new StringContent(postData));
 
          if (!resp.IsSuccessStatusCode)
          {
@@ -54,7 +54,7 @@ namespace Twitch.Stream.Services.ApiTwitchTv
          }
          String rsp = await resp.Content.ReadAsStringAsync();
 
-         var twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(rsp);
+         TwitchAuth twitchAuth = JsonConvert.DeserializeObject<TwitchAuth>(rsp);
 
          return _mapper.Map<TwitchAuthDto>(twitchAuth);
       }

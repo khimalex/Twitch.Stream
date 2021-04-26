@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,8 +22,12 @@ namespace Twitch.Stream.CommandsBuilder
          _serviceProvider = serviceProvider;
       }
 
+      [Required]
       [Option("-n|--name", "Название канала последние видео которого нужно вывести", CommandOptionType.SingleValue)]
       public String Info { get; set; }
+
+      //Not necessary parameter `CommandLineApplication`
+      //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
 
       public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
       {
@@ -31,10 +36,10 @@ namespace Twitch.Stream.CommandsBuilder
          {
             if (!String.IsNullOrEmpty(Info))
             {
-               var op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
+               IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
                op.Value.Streams = new[] { Info };
 
-               var commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadInfo);
+               IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadInfo);
                await commandWorker.RunAsync(ct);
             }
             else

@@ -24,7 +24,7 @@ namespace Twitch.Stream.Services.UsherTwitchTv
       public async Task<Byte[]> GetStreamAsync(String channelName, TwitchAuthDto channelTwitchAuth)
       {
          String request = String.Format(_streamStringFormat, channelName, channelTwitchAuth.Token, channelTwitchAuth.Sig, 2301211);
-         var response = await Client.GetAsync(request);
+         HttpResponseMessage response = await Client.GetAsync(request);
          if (!response.IsSuccessStatusCode)
          {
             throw new HttpRequestException($@"Стрим '{channelName}' не загружен. Статус ошибки: {(Int32)response.StatusCode,3}.");
@@ -37,7 +37,7 @@ namespace Twitch.Stream.Services.UsherTwitchTv
          vodId = new String(vodId.Where(c => Char.IsDigit(c)).ToArray());
 
          String request = String.Format(_videoStringFormat, vodId, vodTwitchAuth.Sig, vodTwitchAuth.Token);
-         var response = await Client.GetAsync(request);
+         HttpResponseMessage response = await Client.GetAsync(request);
          if (!response.IsSuccessStatusCode)
          {
             String str = await response.Content.ReadAsStringAsync();
