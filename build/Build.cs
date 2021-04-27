@@ -23,11 +23,16 @@ internal class Build : NukeBuild
    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
    ///   - Microsoft VSCode           https://nuke.build/vscode
 
-   public static System.Int32 Main() => Execute<Build>(x => x.Compile);
+   public static System.Int32 Main()
+   {
+      return Execute<Build>(x => x.Compile);
+   }
 
    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
 #pragma warning disable IDE1006 // Naming Styles
    private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+
+   [Parameter] private readonly String Version;
 
    [Solution] private readonly Solution Solution;
 #pragma warning restore IDE1006 // Naming Styles
@@ -65,14 +70,14 @@ internal class Build : NukeBuild
        });
 
    private Target Publish => _ => _
-   .After(Restore)
+   .DependsOn(Compile)
    .Executes(() =>
    {
-      System.String[] rids = new[] { "win-x64" }; // Перечисляем RID'ы, для которых собираем приложение
-      Logger.Info($"Сборка для систем: {String.Join(", ", rids)}");
+      System.String[] rids = new[] { "win-x64", "win-x86" }; // Перечисляем RID'ы, для которых собираем приложение
       DotNetPublish(s => s // Теперь вызываем dotnet publish
            .SetVerbosity(DotNetVerbosity.Normal)
-           .SetVersion("2.5.0.0")
+           .SetVersion(String.IsNullOrEmpty(Version) ? "3.0.0.0" : Version)
+           .SetAuthors("KhimAlex")
            .SetProject(Solution.GetProject("Twitch.Stream")) // Для dotnet publish желательно указывать проект
            .SetPublishSingleFile(true) // Собираем в один файл
            .SetSelfContained(true)     // Вместе с рантаймом
@@ -82,6 +87,7 @@ internal class Build : NukeBuild
            .CombineWith(rids, (s, rid) => s // Но нам нужны разные комбинации параметров
                .SetRuntime(rid) // Устанавливаем RID
                .SetOutput(OutputDirectory / rid))); // Делаем так, чтобы сборки с разными RID попали в разные директории
+      Logger.Info($"Сборка для систем: {String.Join(", ", rids)}");
    });
 
 }
