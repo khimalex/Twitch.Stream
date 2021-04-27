@@ -23,6 +23,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Oo]utput/
+.nuke/temp/
 
 # Visual Studio 2015 cache/options directory
 .vs/
