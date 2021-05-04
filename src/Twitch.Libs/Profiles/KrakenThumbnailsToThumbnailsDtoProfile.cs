@@ -4,11 +4,11 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Libs.Profiles
 {
-   internal class KrakenThumbnailsToThumbnailsDtoProfile : Profile
-   {
-      public KrakenThumbnailsToThumbnailsDtoProfile()
-      {
-         CreateMap<Thumbnails, ThumbnailsDto>();
-      }
-   }
+    internal class KrakenThumbnailsToThumbnailsDtoProfile : Profile
+    {
+        public KrakenThumbnailsToThumbnailsDtoProfile()
+        {
+            CreateMap<Thumbnails, ThumbnailsDto>();
+        }
+    }
 }

@@ -11,49 +11,49 @@ using Twitch.Stream.Commands;
 
 namespace Twitch.Stream.CommandsBuilder
 {
-   [Command(DownloadLastBuilder._commandName, Description = @"Скачать последнюю запись стрима")]
-   internal class DownloadLastBuilder
-   {
-      public const String _commandName = @"DownloadLast";
-      private readonly IServiceProvider _serviceProvider;
+    [Command(DownloadLastBuilder._commandName, Description = @"Скачать последнюю запись стрима")]
+    internal class DownloadLastBuilder
+    {
+        public const String _commandName = @"DownloadLast";
+        private readonly IServiceProvider _serviceProvider;
 
-      public DownloadLastBuilder(IServiceProvider serviceProvider)
-      {
-         _serviceProvider = serviceProvider;
-      }
+        public DownloadLastBuilder(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
-      [Required]
-      [Option("-n|--name", "Название канала последнее видео которого нужно скачать", CommandOptionType.SingleValue)]
-      public String Last { get; set; }
+        [Required]
+        [Option("-n|--name", "Название канала последнее видео которого нужно скачать", CommandOptionType.SingleValue)]
+        public String Last { get; set; }
 
-      //Not necessary parameter `CommandLineApplication`
-      //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
-      public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
-      {
-         Int32 result = 0;
-         try
-         {
-            if (!String.IsNullOrEmpty(Last))
+        //Not necessary parameter `CommandLineApplication`
+        //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
+        public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
+        {
+            Int32 result = 0;
+            try
             {
-               IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
-               op.Value.Streams = new[] { Last };
+                if (!String.IsNullOrEmpty(Last))
+                {
+                    IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
+                    op.Value.Streams = new[] { Last };
 
-               IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadLast);
-               await commandWorker.RunAsync(ct);
+                    IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadLast);
+                    await commandWorker.RunAsync(ct);
+                }
+                else
+                {
+                    throw new Exception("Не задано название канала для скачивания последнего видео!");
+                }
+
             }
-            else
+            catch (Exception e)
             {
-               throw new Exception("Не задано название канала для скачивания последнего видео!");
+                _serviceProvider.GetRequiredService<ILogger<DownloadLastBuilder>>().LogError(e, "Произошла ошибка получения информации о канале!");
+                result = 1;
             }
+            return result;
+        }
 
-         }
-         catch (Exception e)
-         {
-            _serviceProvider.GetRequiredService<ILogger<DownloadLastBuilder>>().LogError(e, "Произошла ошибка получения информации о канале!");
-            result = 1;
-         }
-         return result;
-      }
-
-   }
+    }
 }

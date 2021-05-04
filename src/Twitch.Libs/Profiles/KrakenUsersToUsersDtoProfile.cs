@@ -4,12 +4,12 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Libs.Profiles
 {
-   internal class KrakenUsersToUsersDtoProfile : Profile
-   {
-      public KrakenUsersToUsersDtoProfile()
-      {
-         CreateMap<Users, UsersDto>()
-            .ForMember(dest => dest.Total, mo => mo.MapFrom((src, dest) => src._total));
-      }
-   }
+    internal class KrakenUsersToUsersDtoProfile : Profile
+    {
+        public KrakenUsersToUsersDtoProfile()
+        {
+            CreateMap<Users, UsersDto>()
+               .ForMember(dest => dest.Total, mo => mo.MapFrom((src, dest) => src._total));
+        }
+    }
 }

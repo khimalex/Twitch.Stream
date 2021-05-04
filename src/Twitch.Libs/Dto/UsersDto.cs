@@ -2,9 +2,9 @@
 
 namespace Twitch.Stream.Dto
 {
-   public class UsersDto
-   {
-      public System.Int32 Total { get; set; }
-      public List<UserDto> Users { get; set; }
-   }
+    public class UsersDto
+    {
+        public System.Int32 Total { get; set; }
+        public List<UserDto> Users { get; set; }
+    }
 }

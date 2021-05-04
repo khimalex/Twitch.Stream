@@ -12,47 +12,47 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Stream.Commands
 {
-   internal class DownloadVod : IApp
-   {
-      private readonly Appsettings _options;
-      private readonly ILogger _logger;
-      private readonly IApiTwitchTv _apiTwitch;
-      private readonly UsherTwitchTv _usherTwitch;
+    internal class DownloadVod : IApp
+    {
+        private readonly Appsettings _options;
+        private readonly ILogger _logger;
+        private readonly IApiTwitchTv _apiTwitch;
+        private readonly UsherTwitchTv _usherTwitch;
 
-      public DownloadVod(ILogger<DownloadVod> logger, IOptions<Appsettings> optionsAccessor, KrakenApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
-      {
-         _options = optionsAccessor.Value;
-         _logger = logger;
-         _apiTwitch = apiTwitch;
-         _usherTwitch = usherTwitch;
-      }
-      public async Task RunAsync(CancellationToken token = default)
-      {
-         System.Collections.Generic.IEnumerable<Task> tasks = _options.Streams.Select(async videoId =>
-         {
-
-            VideosDto videos = await _apiTwitch.GetVideoInfoAsync(videoId);
-            if (!videos.Videos.Any())
+        public DownloadVod(ILogger<DownloadVod> logger, IOptions<Appsettings> optionsAccessor, KrakenApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
+        {
+            _options = optionsAccessor.Value;
+            _logger = logger;
+            _apiTwitch = apiTwitch;
+            _usherTwitch = usherTwitch;
+        }
+        public async Task RunAsync(CancellationToken token = default)
+        {
+            System.Collections.Generic.IEnumerable<Task> tasks = _options.Streams.Select(async videoId =>
             {
-               throw new Exception($"Не найдено видео '{videoId}'.");
 
-            }
-            VideoDto video = videos.Videos.First();
+                VideosDto videos = await _apiTwitch.GetVideoInfoAsync(videoId);
+                if (!videos.Videos.Any())
+                {
+                    throw new Exception($"Не найдено видео '{videoId}'.");
 
-            TwitchAuthDto vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(videoId);
+                }
+                VideoDto video = videos.Videos.First();
 
-            String invalidFileName = $@"{video.Broadcast_type} {video.Channel.Name} {video.Game} {video.Created_at.ToLocalTime()}.m3u8";
-            String validFileName = String.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));
+                TwitchAuthDto vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(videoId);
 
-            Byte[] videoData = await _usherTwitch.GetVideoAsync(video.Id, vodTwitchAuth);
+                String invalidFileName = $@"{video.Broadcast_type} {video.Channel.Name} {video.Game} {video.Created_at.ToLocalTime()}.m3u8";
+                String validFileName = String.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));
 
-            await File.WriteAllBytesAsync(validFileName, videoData);
-            _logger.LogInformation("Видео '{0}' загружено", validFileName);
+                Byte[] videoData = await _usherTwitch.GetVideoAsync(video.Id, vodTwitchAuth);
 
-         });
+                await File.WriteAllBytesAsync(validFileName, videoData);
+                _logger.LogInformation("Видео '{0}' загружено", validFileName);
 
-         await Task.WhenAll(tasks);
-      }
+            });
 
-   }
+            await Task.WhenAll(tasks);
+        }
+
+    }
 }

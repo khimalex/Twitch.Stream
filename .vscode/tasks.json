@@ -1,0 +1,85 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build",
+      "type": "process",
+      "command": "./build.cmd",
+      "windows": {
+        "command": "./build.cmd",
+        "args": [
+          "--target",
+          "Compile"
+        ]
+      },
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "publish",
+      "type": "process",
+      "command": "./build.cmd",
+      "windows": {
+        "command": "./build.cmd",
+        "args": [
+          "--target",
+          "Publish",
+          "--configuration",
+          "Release"
+        ]
+      },
+      "problemMatcher": "$msCompile",
+    },
+    {
+      "label": "tests",
+      "type": "process",
+      "command": "./build.cmd",
+      "windows": {
+        "command": "./build.cmd",
+        "args": [
+          "--target",
+          "Tests",
+          "--configuration",
+          "Debug"
+        ]
+      },
+      "group": "test"
+    },
+    {
+      "label": "tests Release",
+      "type": "process",
+      "command": "./build.cmd",
+      "windows": {
+        "command": "./build.cmd",
+        "args": [
+          "--target",
+          "Tests",
+          "--configuration",
+          "Release"
+        ]
+      },
+      "group": "test"
+    },
+    {
+      "label": "watch",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "${workspaceFolder}/src/Twitch.Stream/Twitch.Stream.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary"
+      ],
+      "problemMatcher": "$msCompile"
+    }
+  ],
+  "presentation": {
+    "echo": true,
+    "reveal": "always",
+    "focus": false,
+    "panel": "shared",
+    "showReuseMessage": false,
+    "clear": true
+  }
+}

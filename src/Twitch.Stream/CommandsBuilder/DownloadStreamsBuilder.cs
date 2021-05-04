@@ -10,44 +10,44 @@ using Twitch.Stream.Commands;
 
 namespace Twitch.Stream.CommandsBuilder
 {
-   [Command(DownloadStreamsBuilder._commandName, Description = @"Скачать стримы из файла appsettings.json")]
-   internal class DownloadStreamsBuilder
-   {
-      public const String _commandName = @"DownloadStreams";
-      private readonly IServiceProvider _serviceProvider;
+    [Command(DownloadStreamsBuilder._commandName, Description = @"Скачать стримы из файла appsettings.json")]
+    internal class DownloadStreamsBuilder
+    {
+        public const String _commandName = @"DownloadStreams";
+        private readonly IServiceProvider _serviceProvider;
 
-      public DownloadStreamsBuilder(IServiceProvider serviceProvider)
-      {
-         _serviceProvider = serviceProvider;
-      }
+        public DownloadStreamsBuilder(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
-      [Option("-n|--name", "Скачать заданный стрим", CommandOptionType.SingleValue)]
-      public String Name { get; set; }
+        [Option("-n|--name", "Скачать заданный стрим", CommandOptionType.SingleValue)]
+        public String Name { get; set; }
 
 
-      //Not necessary parameter `CommandLineApplication`
-      //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
-      public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
-      {
-         Int32 result = 0;
-         try
-         {
-            if (!String.IsNullOrEmpty(Name))
+        //Not necessary parameter `CommandLineApplication`
+        //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
+        public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
+        {
+            Int32 result = 0;
+            try
             {
-               IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
-               op.Value.Streams = new[] { Name };
+                if (!String.IsNullOrEmpty(Name))
+                {
+                    IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
+                    op.Value.Streams = new[] { Name };
+                }
+
+                IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadStreams);
+                await commandWorker.RunAsync(ct);
             }
+            catch (Exception e)
+            {
+                _serviceProvider.GetRequiredService<ILogger<DownloadStreamsBuilder>>().LogError(e, "Произошла ошибка скачивания стримов!");
+                result = 1;
+            }
+            return result;
+        }
 
-            IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadStreams);
-            await commandWorker.RunAsync(ct);
-         }
-         catch (Exception e)
-         {
-            _serviceProvider.GetRequiredService<ILogger<DownloadStreamsBuilder>>().LogError(e, "Произошла ошибка скачивания стримов!");
-            result = 1;
-         }
-         return result;
-      }
-
-   }
+    }
 }

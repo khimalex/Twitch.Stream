@@ -11,49 +11,49 @@ using Twitch.Stream.Commands;
 
 namespace Twitch.Stream.CommandsBuilder
 {
-   [Command(DownloadInfoBuilder._commandName, Description = @"Показать информацию канала")]
-   internal class DownloadInfoBuilder
-   {
-      public const String _commandName = @"DownloadInfo";
-      private readonly IServiceProvider _serviceProvider;
+    [Command(DownloadInfoBuilder._commandName, Description = @"Показать информацию канала")]
+    internal class DownloadInfoBuilder
+    {
+        public const String _commandName = @"DownloadInfo";
+        private readonly IServiceProvider _serviceProvider;
 
-      public DownloadInfoBuilder(IServiceProvider serviceProvider)
-      {
-         _serviceProvider = serviceProvider;
-      }
+        public DownloadInfoBuilder(IServiceProvider serviceProvider)
+        {
+            _serviceProvider = serviceProvider;
+        }
 
-      [Required]
-      [Option("-n|--name", "Название канала последние видео которого нужно вывести", CommandOptionType.SingleValue)]
-      public String Info { get; set; }
+        [Required]
+        [Option("-n|--name", "Название канала последние видео которого нужно вывести", CommandOptionType.SingleValue)]
+        public String Info { get; set; }
 
-      //Not necessary parameter `CommandLineApplication`
-      //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
+        //Not necessary parameter `CommandLineApplication`
+        //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
 
-      public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
-      {
-         Int32 result = 0;
-         try
-         {
-            if (!String.IsNullOrEmpty(Info))
+        public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
+        {
+            Int32 result = 0;
+            try
             {
-               IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
-               op.Value.Streams = new[] { Info };
+                if (!String.IsNullOrEmpty(Info))
+                {
+                    IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
+                    op.Value.Streams = new[] { Info };
 
-               IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadInfo);
-               await commandWorker.RunAsync(ct);
+                    IApp commandWorker = _serviceProvider.GetServices<IApp>().FirstOrDefault(c => c is DownloadInfo);
+                    await commandWorker.RunAsync(ct);
+                }
+                else
+                {
+                    throw new Exception("Не задано название канала для получения информации!");
+                }
             }
-            else
+            catch (Exception e)
             {
-               throw new Exception("Не задано название канала для получения информации!");
+                _serviceProvider.GetRequiredService<ILogger<DownloadInfoBuilder>>().LogError(e, "Произошла ошибка получения информации о канале!");
+                result = 1;
             }
-         }
-         catch (Exception e)
-         {
-            _serviceProvider.GetRequiredService<ILogger<DownloadInfoBuilder>>().LogError(e, "Произошла ошибка получения информации о канале!");
-            result = 1;
-         }
-         return result;
-      }
+            return result;
+        }
 
-   }
+    }
 }

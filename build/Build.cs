@@ -7,87 +7,137 @@ using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
 using Nuke.Common.Utilities.Collections;
+using System.Linq;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
+using System.Collections.Generic;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
 internal class Build : NukeBuild
 {
-   /// https://habr.com/ru/post/536208/ Быстрый старт
-   /// https://habr.com/ru/post/537460/ Подробный мануал
-   /// Support plugins are available for:
-   ///   - JetBrains ReSharper        https://nuke.build/resharper
-   ///   - JetBrains Rider            https://nuke.build/rider
-   ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
-   ///   - Microsoft VSCode           https://nuke.build/vscode
+    /// https://habr.com/ru/post/536208/ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+    /// https://habr.com/ru/post/537460/ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
+    /// Support plugins are available for:
+    ///   - JetBrains ReSharper        https://nuke.build/resharper
+    ///   - JetBrains Rider            https://nuke.build/rider
+    ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
+    ///   - Microsoft VSCode           https://nuke.build/vscode
 
-   public static System.Int32 Main()
-   {
-      return Execute<Build>(x => x.Compile);
-   }
+    public static Int32 Main()
+    {
+        return Execute<Build>(x => x.Compile);
+    }
 
-   [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
-#pragma warning disable IDE1006 // Naming Styles
-   private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
+    [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
+    private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-   [Parameter] private readonly String Version;
+    [Parameter] private readonly String Version;
 
-   [Solution] private readonly Solution Solution;
-#pragma warning restore IDE1006 // Naming Styles
+    [Solution] private readonly Solution Solution;
 
-   private AbsolutePath SourceDirectory => RootDirectory / "src";
+    private AbsolutePath SourceDirectory => RootDirectory / "src";
 
-   private AbsolutePath TestsDirectory => RootDirectory / "tests";
+    //private AbsolutePath TestsDirectory => SourceDirectory / "Twitch.Libs.Tests";
+    private AbsolutePath TestsDirectoryResult => RootDirectory / "TestsResults";
 
-   private AbsolutePath OutputDirectory => RootDirectory / "output";
+    private AbsolutePath OutputDirectory => RootDirectory / "output";
 
-   private Target Clean => _ => _
-       .Before(Restore)
-       .Executes(() =>
-       {
-          SourceDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-          TestsDirectory.GlobDirectories("**/bin", "**/obj").ForEach(DeleteDirectory);
-          EnsureCleanDirectory(OutputDirectory);
-       });
+    private Target Clean => _ => _
+        .Executes(() =>
+        {
+            Solution.AllProjects
+            .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))
+            .SelectMany(p => p.Directory.GlobDirectories("**/bin", "**/obj"))
+            .ForEach(DeleteDirectory);
+            DeleteDirectory(OutputDirectory);
+            //another way of cleaning directories
+            //EnsureCleanDirectory(OutputDirectory);
+        });
 
-   private Target Restore => _ => _
-       .Executes(() =>
-       {
-          DotNetRestore(s => s
-               .SetProjectFile(Solution));
-       });
+    private Target Restore => _ => _
+        .DependsOn(Clean)
+        .Executes(() =>
+        {
+            DotNetRestore(s => s
+                .SetProjectFile(Solution)
+                .SetVerbosity(DotNetVerbosity.Normal)
+                .When(InvokedTargets.Contains(Tests), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
 
-   private Target Compile => _ => _
-       .DependsOn(Restore)
-       .Executes(() =>
-       {
-          DotNetBuild(s => s
-               .SetProjectFile(Solution)
-               .SetConfiguration(Configuration)
-               .EnableNoRestore());
-       });
+        });
 
-   private Target Publish => _ => _
-   .DependsOn(Compile)
-   .Executes(() =>
-   {
-      System.String[] rids = new[] { "win-x64", "win-x86" }; // Перечисляем RID'ы, для которых собираем приложение
-      DotNetPublish(s => s // Теперь вызываем dotnet publish
-           .SetVerbosity(DotNetVerbosity.Normal)
-           .SetVersion(String.IsNullOrEmpty(Version) ? "3.0.0.0" : Version)
-           .SetAuthors("KhimAlex")
-           .SetProject(Solution.GetProject("Twitch.Stream")) // Для dotnet publish желательно указывать проект
-           .SetPublishSingleFile(true) // Собираем в один файл
-           .SetSelfContained(true)     // Вместе с рантаймом
-           .SetPublishTrimmed(true)
-           .SetConfiguration(Configuration) // Для определённой конфигурации
-           .AddProperty("IncludeNativeLibrariesForSelfExtract", true) //добавляем параметр в публикацию, чтобы нативные библиотеки были включены в финальный exe
-           .CombineWith(rids, (s, rid) => s // Но нам нужны разные комбинации параметров
-               .SetRuntime(rid) // Устанавливаем RID
-               .SetOutput(OutputDirectory / rid))); // Делаем так, чтобы сборки с разными RID попали в разные директории
-      Logger.Info($"Сборка для систем: {String.Join(", ", rids)}");
-   });
+    private Target Compile => _ => _
+        .DependsOn(Restore)
+        .Executes(() =>
+        {
+            DotNetBuild(s => s
+                .SetProjectFile(Solution)
+                .SetConfiguration(Configuration)
+                .SetVerbosity(DotNetVerbosity.Normal)
+                .EnableNoRestore()
+                .When(InvokedTargets.Contains(Tests), ss => ss.SetVerbosity(DotNetVerbosity.Minimal)));
+        });
+
+    private Target Tests => _ => _
+     .DependsOn(Compile)
+     .Executes(() =>
+     {
+         IEnumerable<Project> testProjects = Solution.AllProjects.Where(p => p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase));
+         DotNetTest(s => s
+            .SetVerbosity(DotNetVerbosity.Minimal)
+            .CombineWith(testProjects, (s, p) => s
+                .SetProjectFile(p)
+                .SetResultsDirectory(TestsDirectoryResult / p.Name)));
+     });
+
+    private Target Publish => _ => _
+    .DependsOn(Tests)
+    .Executes(() =>
+    {
+        String version = "3.0.0.0";
+        if (!String.IsNullOrEmpty(Version))
+        {
+            version = Version;
+        }
+        else if (Solution.Properties.TryGetValue(nameof(Version), out String settingsVersion))
+        {
+            version = settingsVersion;
+        }
+
+        System.String[] rids = new[] { "win-x64", "win-x86" };
+        IEnumerable<Project> publishProjects = Solution.AllProjects
+        .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
+        .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))
+        //.Where(p=> p.GetOutputType().Contains("exe"))
+        ;
+
+        DotNetPublish(s => s
+             .SetVerbosity(DotNetVerbosity.Quiet)
+             .SetVersion(version)
+             .SetAuthors("KhimAlex")
+
+             //.SetPublishSingleFile(true)
+             //.SetSelfContained(true)
+             //.SetPublishTrimmed(true)
+
+             .SetConfiguration(Configuration)
+             .AddProperty("IncludeNativeLibrariesForSelfExtract", true)
+             .CombineWith(publishProjects, (s, project) => s
+                 .SetProject(project)
+                 .When("exe".Equals(project.GetOutputType(), StringComparison.InvariantCultureIgnoreCase), s => s
+                     .SetPublishSingleFile(true)
+                     .SetSelfContained(true)
+                     .SetPublishTrimmed(true)
+                     .When(project.GetTargetFrameworks().Any(f => f.Contains("windows", StringComparison.InvariantCultureIgnoreCase)), s => s
+                          .SetPublishTrimmed(false)
+                          .SetPublishSingleFile(false)))
+                 .CombineWith(rids, (s, rid) => s
+                     .SetRuntime(rid)
+                     .SetOutput(OutputDirectory / project.Name / rid))));
+
+
+        Logger.Info($"Published for: {String.Join(", ", rids)}");
+    });
 
 }
