@@ -2,9 +2,9 @@
 
 namespace Twitch.Stream.Dto
 {
-   public class VideosDto
-   {
-      public System.Int32 Total { get; set; }
-      public List<VideoDto> Videos { get; set; } = new List<VideoDto>();
-   }
+    public class VideosDto
+    {
+        public System.Int32 Total { get; set; }
+        public List<VideoDto> Videos { get; set; } = new List<VideoDto>();
+    }
 }

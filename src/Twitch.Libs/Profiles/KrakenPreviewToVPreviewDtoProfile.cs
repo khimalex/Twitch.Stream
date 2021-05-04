@@ -4,11 +4,11 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Libs.Profiles
 {
-   internal class KrakenPreviewToVPreviewDtoProfile : Profile
-   {
-      public KrakenPreviewToVPreviewDtoProfile()
-      {
-         CreateMap<Preview, PreviewDto>();
-      }
-   }
+    internal class KrakenPreviewToVPreviewDtoProfile : Profile
+    {
+        public KrakenPreviewToVPreviewDtoProfile()
+        {
+            CreateMap<Preview, PreviewDto>();
+        }
+    }
 }

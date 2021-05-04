@@ -4,11 +4,11 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Libs.Profiles
 {
-   internal class KrakenResolutionsToResolutionsDtoProfile : Profile
-   {
-      public KrakenResolutionsToResolutionsDtoProfile()
-      {
-         CreateMap<Resolutions, ResolutionsDto>();
-      }
-   }
+    internal class KrakenResolutionsToResolutionsDtoProfile : Profile
+    {
+        public KrakenResolutionsToResolutionsDtoProfile()
+        {
+            CreateMap<Resolutions, ResolutionsDto>();
+        }
+    }
 }

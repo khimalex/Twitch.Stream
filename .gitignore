@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+ApiSettings.Local.json
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
@@ -23,7 +24,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Oo]utput/
-.nuke/temp/
+[Tt]emp/
 
 # Visual Studio 2015 cache/options directory
 .vs/

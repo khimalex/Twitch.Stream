@@ -4,12 +4,12 @@ using Twitch.Stream.Dto;
 
 namespace Twitch.Libs.Profiles
 {
-   internal class KrakenFpsToFpsDtoProfile : Profile
-   {
-      public KrakenFpsToFpsDtoProfile()
-      {
-         CreateMap<Fps, FpsDto>();
-      }
-   }
+    internal class KrakenFpsToFpsDtoProfile : Profile
+    {
+        public KrakenFpsToFpsDtoProfile()
+        {
+            CreateMap<Fps, FpsDto>();
+        }
+    }
 
 }

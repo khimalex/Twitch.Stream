@@ -67,7 +67,8 @@
               "Clean",
               "Compile",
               "Publish",
-              "Restore"
+              "Restore",
+              "Tests"
             ]
           }
         },
@@ -84,7 +85,8 @@
               "Clean",
               "Compile",
               "Publish",
-              "Restore"
+              "Restore",
+              "Tests"
             ]
           }
         },

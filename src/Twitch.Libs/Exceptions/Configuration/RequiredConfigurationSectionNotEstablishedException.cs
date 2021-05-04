@@ -2,9 +2,9 @@
 
 namespace Twitch.Libs.Exceptions.Configuration
 {
-   internal class RequiredConfigurationSectionNotEstablishedException : Exception
-   {
-      private static readonly String _errorMessageFormat = @"
+    internal class RequiredConfigurationSectionNotEstablishedException : Exception
+    {
+        private static readonly String _errorMessageFormat = @"
 
 Configuration file appsettings.jsom MUST contain section ""{0}""! For example: 
 {
@@ -15,9 +15,9 @@ Configuration file appsettings.jsom MUST contain section ""{0}""! For example:
 }
 
 ";
-      internal RequiredConfigurationSectionNotEstablishedException(String sectionName)
-         : base(String.Format(_errorMessageFormat, sectionName))
-      {
-      }
-   }
+        internal RequiredConfigurationSectionNotEstablishedException(String sectionName)
+           : base(String.Format(_errorMessageFormat, sectionName))
+        {
+        }
+    }
 }
