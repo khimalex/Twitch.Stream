@@ -114,12 +114,20 @@ namespace Twitch.Libs.Tests
         {
             //Given
             var services = new ServiceCollection();
-            services.AddAutoMapper(c => { });
-            services.ConfigureAutoMapper();
-            ServiceProvider sp = services.BuildServiceProvider();
+            /*
+            Here if we have been added any profile of type `ProfileType_1` with mappings eg. `CreateMap<Type_1, Type_2>`, 
+            and added any other profile of type `ProfileType_2` with mappings eg. `CreateMap<Type_1, Type_2>`
+            they will have been not registred twice as like two profiles.
+            They will registred as one profile with mappers of types `Type_1` and `Type_2`
+            So i did created `DummyProfile` with `DummySuorce` and `DummyDto`, 
+            for reasons of checking: will be a AutoMapper will registered twice or will rewrite previously registered configuration
+            */
+            services.AddAutoMapper(c => c.AddProfile<DummyProfile>());
 
             var registeredProfiles = new List<Type>()
             {
+                typeof(DummyProfile),
+
                 typeof(HelixTwitchAuthToTwitchAuthDtoProfile),
                 typeof(KrakenTwitchAuthToTwitchAuthDtoProfile),
                 typeof(KrakenUsersToUsersDtoProfile),
@@ -135,17 +143,38 @@ namespace Twitch.Libs.Tests
             };
 
             //When
+            services.ConfigureAutoMapper();
+            ServiceProvider sp = services.BuildServiceProvider();
+
             IMapper mapper = sp.GetService<IMapper>();
             var mappers = mapper.ConfigurationProvider.GetAllTypeMaps().ToList();
 
             //Then
             Boolean allMapperTypesNamesExists = mappers.Select(m => m.Profile.Name).All(n => registeredProfiles.Any(t => t.FullName.Equals(n)));
 
-            Assert.Equal(12, mappers.Count);
+            Assert.Equal(13, mappers.Count);
             Assert.True(allMapperTypesNamesExists);
-            // _output.WriteLine("TESTS STARTED!!!");
+        }
+    }
+
+    internal class DummyProfile : Profile
+    {
+        public DummyProfile()
+        {
+            CreateMap<DummySourceClass, DummyDtoClass>()
+               .ForMember(dest => dest.MyProperty, mo => mo.MapFrom((src, dest) => src.MyProperty))
+               .ForMember(dest => dest.MyProperty, mo => mo.MapFrom((src, dest) => src.MyProperty));
         }
 
+        internal class DummySourceClass
+        {
+            public Int32 MyProperty { get; set; }
+        }
+        internal class DummyDtoClass
+        {
+            public Int32 MyProperty { get; set; }
+        }
     }
+
 
 }
