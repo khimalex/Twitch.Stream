@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 using Twitch.Libs.API.Kraken.Models;
 using Twitch.Libs.Exceptions.API;
 using Twitch.Libs.Serialization;
-using Twitch.Stream.Dto;
+using Twitch.Libs.Dto;
 
 namespace Twitch.Libs.API.Kraken
 {

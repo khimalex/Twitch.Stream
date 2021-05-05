@@ -8,6 +8,7 @@
 *.sln.docstates
 *.trx
 ApiSettings.Local.json
+.vscode/settings.json
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)

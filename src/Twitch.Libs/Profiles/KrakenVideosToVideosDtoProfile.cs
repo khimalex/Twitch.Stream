@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Twitch.Libs.API.Kraken.Models;
-using Twitch.Stream.Dto;
+using Twitch.Libs.Dto;
 
 namespace Twitch.Libs.Profiles
 {

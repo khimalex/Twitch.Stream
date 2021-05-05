@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Twitch.Stream.Dto;
+using Twitch.Libs.Dto;
 
 namespace Twitch.Libs.API
 {
