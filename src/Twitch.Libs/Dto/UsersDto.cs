@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Twitch.Stream.Dto
+namespace Twitch.Libs.Dto
 {
     public class UsersDto
     {

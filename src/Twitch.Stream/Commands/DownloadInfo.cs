@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Twitch.Libs.API;
 using Twitch.Libs.API.Kraken;
-using Twitch.Stream.Dto;
+using Twitch.Libs.Dto;
 
 namespace Twitch.Stream.Commands
 {
@@ -25,7 +25,7 @@ namespace Twitch.Stream.Commands
         public async Task RunAsync(CancellationToken token = default)
         {
             String channelName = _options.Streams.First();
-            Dto.UsersDto users = await _apiTwitch.GetUserInfoAsync(channelName);
+            UsersDto users = await _apiTwitch.GetUserInfoAsync(channelName);
             if (!users.Users.Any())
             {
                 throw new Exception($"Не найден канал '{channelName}'.");
@@ -35,7 +35,7 @@ namespace Twitch.Stream.Commands
 
             VideosDto videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
             videos.Videos.Reverse();
-            foreach (Dto.VideoDto item in videos.Videos)
+            foreach (VideoDto item in videos.Videos)
             {
                 Console.WriteLine($@"{"channel",15}: {item.Channel.Name}");
                 Console.WriteLine($@"{"id",15}: {item.Id}");

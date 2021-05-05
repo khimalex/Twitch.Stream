@@ -1,7 +1,7 @@
 ﻿
 using System;
 
-namespace Twitch.Stream.Dto
+namespace Twitch.Libs.Dto
 {
     public class UserDto
     {

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Twitch.Stream.Dto;
+using Twitch.Libs.Dto;
 
 namespace Twitch.Libs.API.Usher
 {
