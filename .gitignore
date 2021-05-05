@@ -6,6 +6,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.trx
 ApiSettings.Local.json
 
 
@@ -24,7 +25,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Oo]utput/
-[Tt]emp/
+[Tt]ests[Rr]esults/
+[Tt]emp/**
 
 # Visual Studio 2015 cache/options directory
 .vs/
