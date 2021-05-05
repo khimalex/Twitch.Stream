@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -9,6 +10,8 @@ using Twitch.Libs.API.Kraken;
 using Twitch.Libs.Exceptions.Configuration;
 using Twitch.Libs.Profiles;
 
+//Assembly of tests for this library MUST wil be named 'Twitch.Libs.Tests'.
+[assembly: InternalsVisibleTo("Twitch.Libs.Tests")]
 namespace Twitch.Libs
 {
     /// <summary>
@@ -19,15 +22,15 @@ namespace Twitch.Libs
 
         public static IServiceCollection ConfigureTwitchLibs(this IServiceCollection services, IConfiguration configuration, JsonSerializerSettings jsonSerializerSettings = null)
         {
-            services.ConfigureTwitchApisSection(configuration);
             services.ConfigureAutoMapper();
+            services.ConfigureTwitchApisSection(configuration);
             services.ConfigureJsonSerializerOptions(jsonSerializerSettings);
             services.ConfigureApiContainers();
 
             return services;
         }
 
-        private static IServiceCollection ConfigureAutoMapper(this IServiceCollection services)
+        internal static IServiceCollection ConfigureAutoMapper(this IServiceCollection services)
         {
             //Don't need checking double registration, as i think...
             //Developers checked it already, see here:
@@ -57,7 +60,7 @@ namespace Twitch.Libs
         /// <param name="services"></param>
         /// <param name="configuration"></param>
         /// <returns></returns>
-        private static IServiceCollection ConfigureTwitchApisSection(this IServiceCollection services, IConfiguration configuration)
+        internal static IServiceCollection ConfigureTwitchApisSection(this IServiceCollection services, IConfiguration configuration)
         {
             String sectionName = @"TwitchApis";
             IConfigurationSection twitchApisSection = configuration.GetSection(sectionName);
@@ -71,20 +74,19 @@ namespace Twitch.Libs
         }
 
 
-        private static IServiceCollection ConfigureJsonSerializerOptions(this IServiceCollection services, JsonSerializerSettings jsonSerializerSettings)
+        internal static IServiceCollection ConfigureJsonSerializerOptions(this IServiceCollection services, JsonSerializerSettings jsonSerializerSettings = null)
         {
-            jsonSerializerSettings ??= new JsonSerializerSettings();
+            jsonSerializerSettings ??= new JsonSerializerSettings()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = { new StringEnumConverter() }
 
-            jsonSerializerSettings.NullValueHandling = NullValueHandling.Ignore;
-
-            jsonSerializerSettings.Converters.Add(new StringEnumConverter());
-
+            };
             services.AddSingleton(jsonSerializerSettings.GetType(), jsonSerializerSettings);
-
             return services;
 
         }
-        private static IServiceCollection ConfigureApiContainers(this IServiceCollection services)
+        internal static IServiceCollection ConfigureApiContainers(this IServiceCollection services)
         {
             services.AddSingleton<KrakenApiConfigurationContainer>();
             services.AddSingleton<HelixApiConfigurationContainer>();

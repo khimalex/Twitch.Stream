@@ -40,7 +40,7 @@ internal class Build : NukeBuild
     private AbsolutePath SourceDirectory => RootDirectory / "src";
 
     //private AbsolutePath TestsDirectory => SourceDirectory / "Twitch.Libs.Tests";
-    private AbsolutePath TestsDirectoryResult => RootDirectory / "TestsResults";
+    private AbsolutePath TestsDirectoryResult => RootDirectory / "tests";
 
     private AbsolutePath OutputDirectory => RootDirectory / "output";
 
@@ -52,6 +52,17 @@ internal class Build : NukeBuild
             .SelectMany(p => p.Directory.GlobDirectories("**/bin", "**/obj"))
             .ForEach(DeleteDirectory);
             DeleteDirectory(OutputDirectory);
+            //another way of cleaning directories
+            //EnsureCleanDirectory(OutputDirectory);
+        });
+    private Target CleanTests => _ => _
+        .Executes(() =>
+        {
+            Solution.AllProjects
+            .Where(p => p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
+            .SelectMany(p => p.Directory.GlobDirectories("**/bin", "**/obj"))
+            .ForEach(DeleteDirectory);
+            DeleteDirectory(TestsDirectoryResult);
             //another way of cleaning directories
             //EnsureCleanDirectory(OutputDirectory);
         });
@@ -83,12 +94,23 @@ internal class Build : NukeBuild
      .DependsOn(Compile)
      .Executes(() =>
      {
-         IEnumerable<Project> testProjects = Solution.AllProjects.Where(p => p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase));
+         IEnumerable<Project> testProjects = Solution.AllProjects
+         .Where(p => p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase));
+
          DotNetTest(s => s
-            .SetVerbosity(DotNetVerbosity.Minimal)
-            .CombineWith(testProjects, (s, p) => s
-                .SetProjectFile(p)
-                .SetResultsDirectory(TestsDirectoryResult / p.Name)));
+            .SetVerbosity(DotNetVerbosity.Normal)
+            .CombineWith(testProjects, (s, p) =>
+            {
+                EnsureExistingDirectory(TestsDirectoryResult / p.Name);
+                return s
+                   .SetProjectFile(p)
+                   .SetLogger($@"""trx;LogFileName={DateTime.Now:yyyy-MM-dd HH-mm-ss}.trx""")
+                   .SetProcessLogOutput(true)
+                   .SetProcessLogTimestamp(true)
+                   .SetProcessLogFile(TestsDirectoryResult / p.Name / $@"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.log")
+                   .SetResultsDirectory(TestsDirectoryResult / p.Name);
+            }
+                ));
      });
 
     private Target Publish => _ => _
