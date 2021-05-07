@@ -1,4 +1,4 @@
-{
+﻿{
   "version": "2.0.0",
   "tasks": [
     {
@@ -10,6 +10,20 @@
         "args": [
           "--target",
           "Compile"
+        ]
+      },
+      "problemMatcher": "$msCompile",
+      "group": "build"
+    },
+    {
+      "label": "restore",
+      "type": "process",
+      "command": "./build.cmd",
+      "windows": {
+        "command": "./build.cmd",
+        "args": [
+          "--target",
+          "Restore"
         ]
       },
       "problemMatcher": "$msCompile",

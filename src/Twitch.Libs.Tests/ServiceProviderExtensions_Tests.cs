@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Xunit;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
