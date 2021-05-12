@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Twitch.Libs.API;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.API.Usher;
 using Twitch.Libs.Dto;
 
@@ -19,7 +18,7 @@ namespace Twitch.Stream.Commands
         private readonly IApiTwitchTv _apiTwitch;
         private readonly UsherTwitchTv _usherTwitch;
 
-        public DownloadStreams(ILogger<DownloadStreams> logger, IOptions<Appsettings> optionsAccessor, KrakenApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
+        public DownloadStreams(ILogger<DownloadStreams> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
         {
             _optionsAccessor = optionsAccessor.Value;
             _logger = logger;

@@ -7,5 +7,7 @@ namespace Twitch.Libs.API.Helix.Models
     {
         [JsonProperty("streamPlaybackAccessToken")]
         public PlaybackAccessToken StreamPlaybackAccessToken { get; set; }
+        [JsonProperty("videoPlaybackAccessToken")]
+        public PlaybackAccessToken VideoPlaybackAccessToken { get; set; }
     }
 }

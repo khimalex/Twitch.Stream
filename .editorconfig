@@ -45,6 +45,7 @@ indent_size = 2
 dotnet_diagnostic.IDE0055.severity = error
 # IDE0051: Remove unused private member
 dotnet_diagnostic.IDE0051.severity = warning#suggestion
+dotnet_diagnostic.IDE0005.severity = warning#suggestion
 
 # Organize usings
 dotnet_separate_import_directive_groups = false

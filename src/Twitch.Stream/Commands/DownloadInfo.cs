@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Twitch.Libs.API;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.Dto;
 
 namespace Twitch.Stream.Commands
@@ -16,7 +15,7 @@ namespace Twitch.Stream.Commands
         private readonly IApiTwitchTv _apiTwitch;
         private readonly Appsettings _options;
 
-        public DownloadInfo(ILogger<DownloadInfo> logger, IOptions<Appsettings> optionsAccessor, KrakenApiTwitchTv apiTwitch)
+        public DownloadInfo(ILogger<DownloadInfo> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch)
         {
             _logger = logger;
             _apiTwitch = apiTwitch;
@@ -25,24 +24,17 @@ namespace Twitch.Stream.Commands
         public async Task RunAsync(CancellationToken token = default)
         {
             String channelName = _options.Streams.First();
-            UsersDto users = await _apiTwitch.GetUserInfoAsync(channelName);
-            if (!users.Users.Any())
-            {
-                throw new Exception($"Не найден канал '{channelName}'.");
-            }
 
-            String userId = users.Users[0].Id;
-
-            VideosDto videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
+            VideosDto videos = await _apiTwitch.GetChannelVideosAsync(channelName, 100);
             videos.Videos.Reverse();
             foreach (VideoDto item in videos.Videos)
             {
-                Console.WriteLine($@"{"channel",15}: {item.Channel.Name}");
+                Console.WriteLine($@"{"channel",15}: {item.Login}");
                 Console.WriteLine($@"{"id",15}: {item.Id}");
-                Console.WriteLine($@"{"broadcast_type",15}: {item.Broadcast_type}");
+                Console.WriteLine($@"{"type",15}: {item.Type}");
                 Console.WriteLine($@"{"title",15}: {item.Title}");
                 Console.WriteLine($@"{"game",15}: {item.Game}");
-                Console.WriteLine($@"{"DateTime",15}: {item.Created_at.ToLocalTime()}");
+                Console.WriteLine($@"{"DateTime",15}: {item.CreatedAt.ToLocalTime()}");
                 Console.WriteLine(new String('-', Console.WindowWidth));
             }
         }

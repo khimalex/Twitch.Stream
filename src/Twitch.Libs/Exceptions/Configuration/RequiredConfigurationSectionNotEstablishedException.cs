@@ -6,7 +6,7 @@ namespace Twitch.Libs.Exceptions.Configuration
     {
         private static readonly String _errorMessageFormat = @"
 
-Configuration file appsettings.jsom MUST contain section ""{0}""! For example: 
+Configuration file appsettings.json MUST contain section ""{0}""! For example: 
 {
    ""{0}"": {
       ""ClientIDWeb"": ""kimne78kx3ncx6brgo4mv6wki5h1ko"",

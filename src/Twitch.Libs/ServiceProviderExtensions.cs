@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 using Twitch.Libs.API;
 using Twitch.Libs.API.Helix;
 using Twitch.Libs.API.Kraken;
+using Twitch.Libs.API.Usher;
 using Twitch.Libs.Exceptions.Configuration;
 using Twitch.Libs.Profiles;
 
@@ -38,6 +39,11 @@ namespace Twitch.Libs
             services.AddAutoMapper(c =>
             {
                 c.AddProfile<HelixTwitchAuthToTwitchAuthDtoProfile>();
+                c.AddProfile<HelixUsersToUsersDtoProfile>();
+                c.AddProfile<HelixUserToUserDtoProfile>();
+                c.AddProfile<HelixVideoToVideoDtoProfile>();
+                c.AddProfile<HelixVideosToVideosDtoProfile>();
+
                 c.AddProfile<KrakenTwitchAuthToTwitchAuthDtoProfile>();
                 c.AddProfile<KrakenUsersToUsersDtoProfile>();
                 c.AddProfile<KrakenUserToUserDtoProfile>();
@@ -68,7 +74,19 @@ namespace Twitch.Libs
             {
                 throw new RequiredConfigurationSectionNotEstablishedException(sectionName);
             }
+            String helixSectionName = $@"{sectionName}:{nameof(ApiSettings.HelixSettings)}";
+            IConfigurationSection helixSection = configuration.GetSection(helixSectionName);
+
+            String krakenSectionName = $@"{sectionName}:{nameof(ApiSettings.KrakenSettings)}";
+            IConfigurationSection krakenSection = configuration.GetSection(krakenSectionName);
+
+            String usherSectionName = $@"{sectionName}:{nameof(ApiSettings.UsherSettings)}";
+            IConfigurationSection usherSection = configuration.GetSection(usherSectionName);
+
             services.Configure<ApiSettings>(twitchApisSection);
+            services.Configure<UsherSettings>(usherSection);
+            services.Configure<KrakenSettings>(krakenSection);
+            services.Configure<HelixSettings>(helixSection);
 
             return services;
         }

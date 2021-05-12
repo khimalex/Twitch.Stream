@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Twitch.Libs.API;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.API.Usher;
 using Twitch.Libs.Dto;
 
@@ -19,7 +18,7 @@ namespace Twitch.Stream.Commands
         private readonly IApiTwitchTv _apiTwitch;
         private readonly UsherTwitchTv _usherTwitch;
 
-        public DownloadVod(ILogger<DownloadVod> logger, IOptions<Appsettings> optionsAccessor, KrakenApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
+        public DownloadVod(ILogger<DownloadVod> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
         {
             _options = optionsAccessor.Value;
             _logger = logger;
@@ -41,7 +40,7 @@ namespace Twitch.Stream.Commands
 
                 TwitchAuthDto vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(videoId);
 
-                String invalidFileName = $@"{video.Broadcast_type} {video.Channel.Name} {video.Game} {video.Created_at.ToLocalTime()}.m3u8";
+                String invalidFileName = $@"{video.Type} {video.Login} {video.Game} {video.CreatedAt.ToLocalTime()}.m3u8";
                 String validFileName = String.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));
 
                 Byte[] videoData = await _usherTwitch.GetVideoAsync(video.Id, vodTwitchAuth);

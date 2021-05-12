@@ -9,8 +9,28 @@ namespace Twitch.Libs.Profiles
         public HelixTwitchAuthToTwitchAuthDtoProfile()
         {
             CreateMap<TwitchAuth, TwitchAuthDto>()
-               .ForMember(dest => dest.Sig, mo => mo.MapFrom((src, dest) => src.Data.StreamPlaybackAccessToken.Signature))
-               .ForMember(dest => dest.Token, mo => mo.MapFrom((src, dest) => src.Data.StreamPlaybackAccessToken.Value));
+               .ForMember(dest => dest.Sig, mo => mo.MapFrom((src, dest) =>
+               {
+                   if (src.Data.StreamPlaybackAccessToken is not null)
+                   {
+                       return src.Data.StreamPlaybackAccessToken.Signature;
+                   }
+                   else
+                   {
+                       return src.Data.VideoPlaybackAccessToken.Signature;
+                   }
+               }))
+               .ForMember(dest => dest.Token, mo => mo.MapFrom((src, dest) =>
+               {
+                   if (src.Data.StreamPlaybackAccessToken is not null)
+                   {
+                       return src.Data.StreamPlaybackAccessToken.Value;
+                   }
+                   else
+                   {
+                       return src.Data.VideoPlaybackAccessToken.Value;
+                   }
+               }));
         }
     }
 }

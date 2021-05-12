@@ -7,13 +7,13 @@ namespace Twitch.Libs.API.Helix
 {
     public class HelixApiConfigurationContainer
     {
-        public HelixApiConfigurationContainer(IOptions<ApiSettings> options, IMapper mapper, JsonSerializerSettings jsonSerializerSettings)
+        public HelixApiConfigurationContainer(IOptions<HelixSettings> options, IMapper mapper, JsonSerializerSettings jsonSerializerSettings)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             JsonSerializerSettings = jsonSerializerSettings;
         }
-        public IOptions<ApiSettings> Options { get; }
+        public IOptions<HelixSettings> Options { get; }
         public IMapper Mapper { get; }
         public JsonSerializerSettings JsonSerializerSettings { get; }
 

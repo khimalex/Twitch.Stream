@@ -9,28 +9,20 @@ using Twitch.Libs.API.Kraken.Models;
 using Twitch.Libs.Exceptions.API;
 using Twitch.Libs.Serialization;
 using Twitch.Libs.Dto;
+using System.Linq;
 
 namespace Twitch.Libs.API.Kraken
 {
     public class KrakenApiTwitchTv : IApiTwitchTv
     {
-        //Why this strings here? Because all of tightly affiliated to the Kraken API.
-        private readonly String _userInfoStringFormat = @"/kraken/users?login={0}";
-        private readonly String _userVideosInfoStringFormat = @"/kraken/channels/{0}/videos?limit={1}&broadcast_type={2}";
-        private readonly String _videoInfoStringFormat = @"/kraken/videos/{0}";
-
-
-
         private readonly HttpClient _client;
-        private readonly ApiSettings _options;
+        private readonly KrakenSettings _options;
         private readonly IMapper _mapper;
         private readonly JsonSerializerSettings _jsonSerializerSettings;
 
         public KrakenApiTwitchTv(HttpClient client, KrakenApiConfigurationContainer krakenApiConfiguration)
         {
             _client = client;
-            //Base Kraken API Url Only for Kraken API
-            _client.BaseAddress = new Uri(@"https://api.twitch.tv");
             _client.DefaultRequestHeaders.Add("Accept", @"application/vnd.twitchtv.v5+json");
 
             _options = krakenApiConfiguration.Options.Value;
@@ -45,13 +37,19 @@ namespace Twitch.Libs.API.Kraken
             }
 
             String postData = BuildTwitchGqlQuery(channelName: channelName);
+            using var content = new StringContent(postData);
+            using HttpRequestMessage request = IApiTwitchTvHelpers.BuildRequest
+            (
+                method: HttpMethod.Post,
+                requestUri: _options.TwitchGQL,
+                content: content,
+                headers: new Dictionary<String, String>
+                {
+                    {"Client-ID", _options.ClientIDWeb}
+                }
+            );
 
-            var request = new HttpRequestMessage(new HttpMethod("POST"), _options.TwitchGQL)
-            {
-                Content = new StringContent(postData)
-            };
-            request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientIDWeb);
-            HttpResponseMessage response = await _client.SendAsync(request);
+            using HttpResponseMessage response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 CommonModels.ErrorResponse failResponse = await response.Content.ReadFromJsonAsync<CommonModels.ErrorResponse>(_jsonSerializerSettings);
@@ -63,18 +61,25 @@ namespace Twitch.Libs.API.Kraken
             return _mapper.Map<TwitchAuthDto>(twitchAuth);
         }
 
-        public async Task<UsersDto> GetUserInfoAsync(String channelName)
+        public async Task<UsersDto> GetChannelInfoAsync(String channelName)
         {
             if (String.IsNullOrEmpty(channelName))
             {
                 throw new ArgumentException("Channel name MUST be established!", nameof(channelName));
             }
 
-            var request = new HttpRequestMessage(new HttpMethod("GET"), String.Format(_userInfoStringFormat, channelName));
-            request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientID);
+            using HttpRequestMessage request = IApiTwitchTvHelpers.BuildRequest
+            (
+                method: HttpMethod.Get,
+                requestUri: $@"{_options.Api}/users?login={channelName}",
+                headers: new Dictionary<String, String>
+                {
+                    {"Client-ID", _options.ClientID}
+                }
 
-            //String request = String.Format(_userInfoStringFormat, channelName);
-            HttpResponseMessage response = await _client.SendAsync(request);
+            );
+
+            using HttpResponseMessage response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 CommonModels.ErrorResponse failResponse = await response.Content.ReadFromJsonAsync<CommonModels.ErrorResponse>(_jsonSerializerSettings);
@@ -86,27 +91,36 @@ namespace Twitch.Libs.API.Kraken
             UsersDto result = _mapper.Map<UsersDto>(users);
             return result;
 
-            //throw new System.NotImplementedException();
         }
 
-        public async Task<VideosDto> GetUserVideosAsync(String userId, Int32 first = 100, String type = "archive")
+        public async Task<VideosDto> GetChannelVideosAsync(String channelName, Int32 first = 100, String type = "archive")
         {
 
-            if (String.IsNullOrEmpty(userId))
+            if (String.IsNullOrEmpty(channelName))
             {
-                throw new ArgumentException("User Id MUST be provided!", nameof(userId));
+                throw new ArgumentException("Channel Name MUST be provided!", nameof(channelName));
+            }
+            UsersDto userInfo = await GetChannelInfoAsync(channelName);
+            if (!userInfo.Users.Any())
+            {
+                throw new Exception($"Channel '{channelName}' not found!");
             }
 
-            var request = new HttpRequestMessage(new HttpMethod("GET"), String.Format(_userVideosInfoStringFormat, userId, first, type));
-            request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientID);
+            using HttpRequestMessage request = IApiTwitchTvHelpers.BuildRequest
+            (
+                method: HttpMethod.Get,
+                requestUri: $@"{_options.Api}/channels/{userInfo.Users.First().Id}/videos?limit={first}&broadcast_type={type}",
+                headers: new Dictionary<String, String>
+                {
+                    {"Client-ID", _options.ClientID}
+                }
 
-
-            //String request = String.Format(_userVideosInfoStringFormat, userId, first, type);
-            HttpResponseMessage response = await _client.SendAsync(request);
+            );
+            using HttpResponseMessage response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 CommonModels.ErrorResponse failResponse = await response.Content.ReadFromJsonAsync<CommonModels.ErrorResponse>(_jsonSerializerSettings);
-                throw new TwitchApiResponseException($@"Could not receive Video for User Id '{userId}'.", failResponse);
+                throw new TwitchApiResponseException($@"Could not receive Video for User Id '{channelName}'.", failResponse);
             }
 
 
@@ -122,15 +136,16 @@ namespace Twitch.Libs.API.Kraken
                 throw new ArgumentException("Идентификатор видео не может быть пустым", nameof(videoId));
             }
 
-            var request = new HttpRequestMessage(new HttpMethod("GET"), String.Format(_videoInfoStringFormat, videoId));
-            request.Headers.TryAddWithoutValidation("Client-ID", _options.ClientIDWeb);
-
-
-            HttpResponseMessage response = await _client.SendAsync(request);
-
-
-            //String request = String.Format(_videoInfoStringFormat, videoId);
-            //var response = await _client.GetAsync(request);
+            using HttpRequestMessage request = IApiTwitchTvHelpers.BuildRequest
+            (
+                method: HttpMethod.Get,
+                requestUri: $@"{_options.Api}/videos/{videoId}",
+                headers: new Dictionary<String, String>
+                {
+                    {"Client-ID", _options.ClientID}
+                }
+            );
+            using HttpResponseMessage response = await _client.SendAsync(request);
             if (!response.IsSuccessStatusCode)
             {
                 CommonModels.ErrorResponse failResponse = await response.Content.ReadFromJsonAsync<CommonModels.ErrorResponse>(_jsonSerializerSettings);
@@ -147,25 +162,28 @@ namespace Twitch.Libs.API.Kraken
 
         public async Task<TwitchAuthDto> GetVodTwitchAuthAsync(String videoId)
         {
-
-
             if (String.IsNullOrEmpty(videoId))
             {
-                throw new ArgumentException("Идентификатор видео не может быть пустым", nameof(videoId));
+                throw new ArgumentException("Video Id MUST be provided!", nameof(videoId));
             }
 
             String postData = BuildTwitchGqlQuery(videoId: videoId);
-
-            var request1 = new HttpRequestMessage(new HttpMethod("POST"), _options.TwitchGQL)
-            {
-                Content = new StringContent(postData)
-            };
-            request1.Headers.TryAddWithoutValidation("Client-ID", _options.ClientIDWeb);
-            HttpResponseMessage response1 = await _client.SendAsync(request1);
+            using var content = new StringContent(postData);
+            using HttpRequestMessage request = IApiTwitchTvHelpers.BuildRequest
+            (
+                method: HttpMethod.Post,
+                requestUri: _options.TwitchGQL,
+                content: content,
+                headers: new Dictionary<String, String>
+                {
+                    {"Client-ID", _options.ClientIDWeb}
+                }
+            );
+            using HttpResponseMessage response1 = await _client.SendAsync(request);
             if (!response1.IsSuccessStatusCode)
             {
                 _ = await response1.Content.ReadAsStringAsync();
-                throw new Exception($"Не удалось получить данные для видео '{videoId}'");
+                throw new Exception($"Couldn't receive video '{videoId}'");
             }
 
             TwitchAuth twitchAuth = await response1.Content.ReadFromJsonAsync<TwitchAuth>(_jsonSerializerSettings);

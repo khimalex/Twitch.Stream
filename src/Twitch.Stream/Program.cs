@@ -7,8 +7,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Twitch.Libs;
+using Twitch.Libs.API;
 using Twitch.Libs.API.Helix;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.API.Usher;
 using Twitch.Stream.Commands;
 
@@ -35,8 +35,8 @@ namespace Twitch.Stream
                    services.Configure<Appsettings>(context.Configuration);
                    services.ConfigureTwitchLibs(context.Configuration);
 
-                   services.AddHttpClient<KrakenApiTwitchTv>();
-                   services.AddHttpClient<HelixApiTwitchTv>();
+                   //services.AddHttpClient<KrakenApiTwitchTv>();
+                   services.AddHttpClient<IApiTwitchTv, HelixApiTwitchTv>();
                    services.AddHttpClient<UsherTwitchTv>();
 
                    //todo: какую-нибудь бы фабричку
@@ -48,13 +48,13 @@ namespace Twitch.Stream
                .ConfigureLogging(loggerBuilder =>
                {
                    loggerBuilder.ClearProviders()
-                .AddFilter("System", LogLevel.None)
-                .AddFilter("Microsoft", LogLevel.None)
-                .AddFilter("Twitch.Stream", LogLevel.Information)
-                .AddSimpleConsole(c =>
-                {
-                    c.IncludeScopes = true;
-                });
+                   .AddFilter("System", LogLevel.None)
+                   .AddFilter("Microsoft", LogLevel.None)
+                   .AddFilter("Twitch.Stream", LogLevel.Information)
+                   .AddSimpleConsole(c =>
+                   {
+                       c.IncludeScopes = true;
+                   });
                });
 
             CommandLineApplication<CommandsBuilder.ShortcutsBuilder> app = null;

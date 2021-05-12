@@ -12,6 +12,9 @@ using Xunit.Abstractions;
 using AutoMapper;
 using System.Collections.Generic;
 using Twitch.Libs.Profiles;
+using Twitch.Libs.API.Usher;
+using Twitch.Libs.API.Kraken;
+using Twitch.Libs.API.Helix;
 
 namespace Twitch.Libs.Tests
 {
@@ -75,11 +78,27 @@ namespace Twitch.Libs.Tests
             String _twitchApisJson =
             @"
 {
-    ""TwitchApis"": {
-                    ""ClientIDWeb"": ""kimne78kx3ncx6brgo4mv6wki5h1ko"",
-                    ""ClientID"": ""cyo0r8igpepltw3op368vsy4wsub16w"",
-                    ""ClientSecret"": ""You MUST obtain Your Own Here: https://dev.twitch.tv/console/apps/create""
-                   }
+    ""TwitchApis"": 
+    {
+        ""HelixSettings"":
+        {
+            ""ClientIDWeb"": ""kimne78kx3ncx6brgo4mv6wki5h1ko"",
+            ""ClientID"": ""cyo0r8igpepltw3op368vsy4wsub16w"",
+            ""ClientSecret"": ""You MUST obtain Your Own Here: https://dev.twitch.tv/console/apps/create""
+        },
+        ""KrakenSettings"":
+        {
+            ""ClientIDWeb"": ""kimne78kx3ncx6brgo4mv6wki5h1ko"",
+            ""ClientID"": ""cyo0r8igpepltw3op368vsy4wsub16w"",
+            ""ClientSecret"": ""You MUST obtain Your Own Here: https://dev.twitch.tv/console/apps/create""
+        },
+        ""UsherSettings"":
+        {
+            ""ClientIDWeb"": ""kimne78kx3ncx6brgo4mv6wki5h1ko"",
+            ""ClientID"": ""cyo0r8igpepltw3op368vsy4wsub16w"",
+            ""ClientSecret"": ""You MUST obtain Your Own Here: https://dev.twitch.tv/console/apps/create""
+        }
+    }
 }";
 
             using var ms = new MemoryStream();
@@ -100,13 +119,21 @@ namespace Twitch.Libs.Tests
             AppsettingsWrapper appsettings = sp.GetService<IOptions<AppsettingsWrapper>>()?.Value;
             ApiSettings twitchApiSettings = sp.GetService<IOptions<ApiSettings>>()?.Value;
 
+            UsherSettings usherSettings = sp.GetService<IOptions<UsherSettings>>()?.Value;
+            KrakenSettings krakenSettings = sp.GetService<IOptions<KrakenSettings>>()?.Value;
+            HelixSettings helixSettings = sp.GetService<IOptions<HelixSettings>>()?.Value;
+
             //Then
             Assert.NotNull(appsettings);
             Assert.NotNull(twitchApiSettings);
-            Assert.NotEqual(appsettings.TwitchApis, twitchApiSettings);
-            Assert.Equal("cyo0r8igpepltw3op368vsy4wsub16w", twitchApiSettings.ClientID);
-            Assert.Equal("kimne78kx3ncx6brgo4mv6wki5h1ko", twitchApiSettings.ClientIDWeb);
-            Assert.Equal("You MUST obtain Your Own Here: https://dev.twitch.tv/console/apps/create", twitchApiSettings.ClientSecret);
+            Assert.NotNull(usherSettings);
+            Assert.NotNull(krakenSettings);
+            Assert.NotNull(helixSettings);
+
+            // Assert.NotEqual(appsettings.TwitchApis, twitchApiSettings);
+            // Assert.Equal("cyo0r8igpepltw3op368vsy4wsub16w", twitchApiSettings.ClientID);
+            // Assert.Equal("kimne78kx3ncx6brgo4mv6wki5h1ko", twitchApiSettings.ClientIDWeb);
+            // Assert.Equal("You MUST obtain Your Own Here: https://dev.twitch.tv/console/apps/create", twitchApiSettings.ClientSecret);
         }
 
         [Fact]
@@ -129,6 +156,11 @@ namespace Twitch.Libs.Tests
                 typeof(DummyProfile),
 
                 typeof(HelixTwitchAuthToTwitchAuthDtoProfile),
+                typeof(HelixUsersToUsersDtoProfile),
+                typeof(HelixUserToUserDtoProfile),
+                typeof(HelixVideosToVideosDtoProfile),
+                typeof(HelixVideoToVideoDtoProfile),
+
                 typeof(KrakenTwitchAuthToTwitchAuthDtoProfile),
                 typeof(KrakenUsersToUsersDtoProfile),
                 typeof(KrakenUserToUserDtoProfile),
@@ -152,7 +184,7 @@ namespace Twitch.Libs.Tests
             //Then
             Boolean allMapperTypesNamesExists = mappers.Select(m => m.Profile.Name).All(n => registeredProfiles.Any(t => t.FullName.Equals(n)));
 
-            Assert.Equal(13, mappers.Count);
+            Assert.Equal(17, mappers.Count);
             Assert.True(allMapperTypesNamesExists);
         }
     }

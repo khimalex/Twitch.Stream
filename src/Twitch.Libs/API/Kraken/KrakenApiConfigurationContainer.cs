@@ -7,7 +7,7 @@ namespace Twitch.Libs.API.Kraken
 {
     public class KrakenApiConfigurationContainer
     {
-        public KrakenApiConfigurationContainer(IOptions<ApiSettings> options, IMapper mapper, JsonSerializerSettings jsonSerializerOptions)
+        public KrakenApiConfigurationContainer(IOptions<KrakenSettings> options, IMapper mapper, JsonSerializerSettings jsonSerializerOptions)
         {
             Options = options ?? throw new ArgumentNullException(nameof(options));
             Mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -15,7 +15,7 @@ namespace Twitch.Libs.API.Kraken
             JsonSerializerSettings = jsonSerializerOptions;
         }
 
-        public IOptions<ApiSettings> Options { get; }
+        public IOptions<KrakenSettings> Options { get; }
         public IMapper Mapper { get; }
         public JsonSerializerSettings JsonSerializerSettings { get; }
     }

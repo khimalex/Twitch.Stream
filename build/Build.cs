@@ -74,7 +74,7 @@ internal class Build : NukeBuild
             DotNetRestore(s => s
                 .SetProjectFile(Solution)
                 .SetVerbosity(DotNetVerbosity.Normal)
-                .When(InvokedTargets.Contains(Tests), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
+                .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
 
         });
 
@@ -87,7 +87,7 @@ internal class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetVerbosity(DotNetVerbosity.Normal)
                 .EnableNoRestore()
-                .When(InvokedTargets.Contains(Tests), ss => ss.SetVerbosity(DotNetVerbosity.Minimal)));
+                .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Minimal)));
         });
 
     private Target Tests => _ => _

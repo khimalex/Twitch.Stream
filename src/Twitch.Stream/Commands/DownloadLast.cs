@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Twitch.Libs.API;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.API.Usher;
 using Twitch.Libs.Dto;
 
@@ -19,7 +18,7 @@ namespace Twitch.Stream.Commands
         private readonly UsherTwitchTv _usherTwitch;
         private readonly Appsettings _options;
 
-        public DownloadLast(ILogger<DownloadInfo> logger, IOptions<Appsettings> optionsAccessor, KrakenApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
+        public DownloadLast(ILogger<DownloadInfo> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
         {
             _logger = logger;
             _apiTwitch = apiTwitch;
@@ -30,15 +29,8 @@ namespace Twitch.Stream.Commands
         public async Task RunAsync(CancellationToken token = default)
         {
             String channelName = _options.Streams.First();
-            UsersDto users = await _apiTwitch.GetUserInfoAsync(channelName);
-            if (!users.Users.Any())
-            {
-                throw new Exception($"Не найден канал '{channelName}'.");
-            }
 
-            String userId = users.Users[0].Id;
-
-            VideosDto videos = await _apiTwitch.GetUserVideosAsync(userId, 100);
+            VideosDto videos = await _apiTwitch.GetChannelVideosAsync(channelName, 100);
 
             VideoDto lastVideo = videos.Videos.FirstOrDefault();
             if (lastVideo is null)
@@ -47,7 +39,7 @@ namespace Twitch.Stream.Commands
             }
             TwitchAuthDto vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(lastVideo.Id);
 
-            String invalidFileName = $@"{lastVideo.Broadcast_type} {lastVideo.Channel.Name} {lastVideo.Game} {lastVideo.Created_at.ToLocalTime()}.m3u8";
+            String invalidFileName = $@"{lastVideo.Type} {lastVideo.Login} {lastVideo.Game} {lastVideo.CreatedAt.ToLocalTime()}.m3u8";
             String validFileName = String.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));
 
             Byte[] videoData = await _usherTwitch.GetVideoAsync(lastVideo.Id, vodTwitchAuth);
