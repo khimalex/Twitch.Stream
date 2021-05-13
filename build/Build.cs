@@ -126,9 +126,10 @@ internal class Build : NukeBuild
 
         DotNetPublish(s => s
              .SetVerbosity(DotNetVerbosity.Quiet)
-             .SetVersionPrefix("v")
-             .SetVersionSuffix(GitVersion.PreReleaseTag)
-             .SetVersion(GitVersion.SemVer)
+             .SetVersion(GitVersion.FullSemVer)
+             .SetAssemblyVersion(GitVersion.AssemblySemVer)
+             .SetFileVersion(GitVersion.AssemblySemFileVer)
+             .SetInformationalVersion(GitVersion.InformationalVersion)
              .SetAuthors("KhimAlex")
 
              //.SetPublishSingleFile(true)
