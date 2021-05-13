@@ -101,9 +101,6 @@
             "Quiet",
             "Verbose"
           ]
-        },
-        "Version": {
-          "type": "string"
         }
       }
     }

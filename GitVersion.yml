@@ -1,6 +1,7 @@
-﻿mode: ContinuousDeployment
-next-version: 3.0.0
-branches: {}
+assembly-versioning-scheme: MajorMinorPatchTag
+mode: ContinuousDeployment
+branches:
+  develop: {}
 ignore:
   sha: []
 merge-message-formats: {}
