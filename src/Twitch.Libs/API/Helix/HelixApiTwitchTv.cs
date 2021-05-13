@@ -234,7 +234,7 @@ namespace Twitch.Libs.API.Helix
                 _ = await response1.Content.ReadAsStringAsync();
                 throw new Exception($"Couldn't receive video '{videoId}'");
             }
-            var str = await response1.Content.ReadAsStringAsync();
+            //var str = await response1.Content.ReadAsStringAsync();
             TwitchAuth twitchAuth = await response1.Content.ReadFromJsonAsync<TwitchAuth>(_jsonSerializerSettings);
 
             return _mapper.Map<TwitchAuthDto>(twitchAuth);

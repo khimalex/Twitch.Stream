@@ -12,6 +12,7 @@ using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
 using System.Collections.Generic;
+using Nuke.Common.Tools.GitVersion;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
@@ -33,8 +34,7 @@ internal class Build : NukeBuild
     [Parameter("Configuration to build - Default is 'Debug' (local) or 'Release' (server)")]
     private readonly Configuration Configuration = IsLocalBuild ? Configuration.Debug : Configuration.Release;
 
-    [Parameter] private readonly String Version;
-
+    [GitVersion] private readonly GitVersion GitVersion;
     [Solution] private readonly Solution Solution;
 
     private AbsolutePath SourceDirectory => RootDirectory / "src";
@@ -114,19 +114,9 @@ internal class Build : NukeBuild
      });
 
     private Target Publish => _ => _
-    .DependsOn(Tests)
+    //.DependsOn(Tests)
     .Executes(() =>
     {
-        String version = "3.0.0.0";
-        if (!String.IsNullOrEmpty(Version))
-        {
-            version = Version;
-        }
-        else if (Solution.Properties.TryGetValue(nameof(Version), out String settingsVersion))
-        {
-            version = settingsVersion;
-        }
-
         System.String[] rids = new[] { "win-x64", "win-x86" };
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
@@ -136,7 +126,9 @@ internal class Build : NukeBuild
 
         DotNetPublish(s => s
              .SetVerbosity(DotNetVerbosity.Quiet)
-             .SetVersion(version)
+             .SetVersionPrefix("v")
+             .SetVersionSuffix(GitVersion.PreReleaseTag)
+             .SetVersion(GitVersion.SemVer)
              .SetAuthors("KhimAlex")
 
              //.SetPublishSingleFile(true)

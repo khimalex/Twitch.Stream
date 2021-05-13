@@ -1,5 +1,4 @@
 ﻿{
   "$schema": "./build.schema.json",
-  "Solution": "Twitch.sln",
-  "Version": "3.1.0.0"
+  "Solution": "Twitch.sln"
 }
