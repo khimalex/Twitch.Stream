@@ -1,8 +1,0 @@
-﻿{
-  "profiles": {
-    "Twitch.Stream": {
-      "commandName": "Project",
-      "commandLineArgs": "DownloadInfo -n juice"
-    }
-  }
-}

@@ -9,7 +9,9 @@
         "command": "./build.cmd",
         "args": [
           "--target",
-          "Compile"
+          "Compile",
+          "--configuration",
+          "Debug"
         ]
       },
       "problemMatcher": "$msCompile",
@@ -23,7 +25,9 @@
         "command": "./build.cmd",
         "args": [
           "--target",
-          "Restore"
+          "Restore",
+          "--configuration",
+          "Debug"
         ]
       },
       "problemMatcher": "$msCompile",
@@ -39,7 +43,7 @@
           "--target",
           "Publish",
           "--configuration",
-          "Release"
+          "Debug"
         ]
       },
       "problemMatcher": "$msCompile",
@@ -70,7 +74,7 @@
           "Tests",
           "--configuration",
           "Release"
-        ]
+        ],
       },
       "group": "test"
     },

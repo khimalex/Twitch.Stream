@@ -99,25 +99,31 @@ internal class Build : NukeBuild
 
          DotNetTest(s => s
             .SetVerbosity(DotNetVerbosity.Normal)
+            .SetConfiguration(Configuration)
+            .When(Configuration == Configuration.Debug, s => s
+                .AddProcessEnvironmentVariable("DOTNET_ENVIRONMENT", "Development")
+            )
+            //.SetConfiguration(Configuration)
             .CombineWith(testProjects, (s, p) =>
-            {
-                EnsureExistingDirectory(TestsDirectoryResult / p.Name);
-                return s
-                   .SetProjectFile(p)
-                   .SetLogger($@"""trx;LogFileName={DateTime.Now:yyyy-MM-dd HH-mm-ss}.trx""")
-                   .SetProcessLogOutput(true)
-                   .SetProcessLogTimestamp(true)
-                   .SetProcessLogFile(TestsDirectoryResult / p.Name / $@"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.log")
-                   .SetResultsDirectory(TestsDirectoryResult / p.Name);
-            }
-                ));
+                {
+                    EnsureExistingDirectory(TestsDirectoryResult / p.Name);
+                    return s
+                       .SetProjectFile(p)
+                       .SetLogger($@"""trx;LogFileName={DateTime.Now:yyyy-MM-dd HH-mm-ss}.trx""")
+                       .SetProcessLogOutput(true)
+                       .SetProcessLogTimestamp(true)
+                       .SetProcessLogFile(TestsDirectoryResult / p.Name / $@"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.log")
+                       .SetResultsDirectory(TestsDirectoryResult / p.Name);
+                }
+            )
+        );
      });
 
     private Target Publish => _ => _
-    //.DependsOn(Tests)
+    .DependsOn(Tests)
     .Executes(() =>
     {
-        System.String[] rids = new[] { "win-x64", "win-x86" };
+        String[] rids = new[] { "win-x64", "win-x86" };
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
         .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))
@@ -125,34 +131,31 @@ internal class Build : NukeBuild
         ;
 
         DotNetPublish(s => s
-             .SetVerbosity(DotNetVerbosity.Quiet)
-             .SetVersion(GitVersion.FullSemVer)
-             .SetAssemblyVersion(GitVersion.AssemblySemVer)
-             .SetFileVersion(GitVersion.AssemblySemFileVer)
-             .SetInformationalVersion(GitVersion.InformationalVersion)
-             .SetAuthors("KhimAlex")
-
-             //.SetPublishSingleFile(true)
-             //.SetSelfContained(true)
-             //.SetPublishTrimmed(true)
-
-             .SetConfiguration(Configuration)
-             .AddProperty("IncludeNativeLibrariesForSelfExtract", true)
-             .CombineWith(publishProjects, (s, project) => s
-                 .SetProject(project)
-                 .When("exe".Equals(project.GetOutputType(), StringComparison.InvariantCultureIgnoreCase), s => s
-                     .SetPublishSingleFile(true)
-                     .SetSelfContained(true)
-                     .SetPublishTrimmed(true)
-                     .When(project.GetTargetFrameworks().Any(f => f.Contains("windows", StringComparison.InvariantCultureIgnoreCase)), s => s
-                          .SetPublishTrimmed(false)
-                          .SetPublishSingleFile(false)))
-                 .CombineWith(rids, (s, rid) => s
-                     .SetRuntime(rid)
-                     .SetOutput(OutputDirectory / project.Name / rid))));
-
-
-        Logger.Info($"Published for: {String.Join(", ", rids)}");
+            .SetConfiguration(Configuration)
+            .SetVerbosity(DotNetVerbosity.Quiet)
+            .SetVersion(GitVersion.AssemblySemVer)
+            .SetAssemblyVersion(GitVersion.AssemblySemVer)
+            .SetFileVersion(GitVersion.AssemblySemFileVer)
+            .SetInformationalVersion(GitVersion.InformationalVersion)
+            .SetAuthors("KhimAlex")
+            .AddProperty("IncludeNativeLibrariesForSelfExtract", true)
+            .CombineWith(publishProjects, (s, project) => s
+                .SetProject(project)
+                .When("exe".Equals(project.GetOutputType(), StringComparison.InvariantCultureIgnoreCase), s => s
+                    .SetPublishSingleFile(true)
+                    .SetSelfContained(true)
+                    .SetPublishTrimmed(true)
+                    .When(project.GetTargetFrameworks().Any(f => f.Contains("windows", StringComparison.InvariantCultureIgnoreCase)), s => s
+                        .SetPublishTrimmed(false)
+                        .SetPublishSingleFile(false)
+                    )
+                )
+                .CombineWith(rids, (s, rid) => s
+                    .SetRuntime(rid)
+                    .SetOutput(OutputDirectory / project.Name / Configuration / rid)
+                )
+            )
+        );
     });
 
 }

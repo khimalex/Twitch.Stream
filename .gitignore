@@ -7,7 +7,7 @@
 *.userosscache
 *.sln.docstates
 *.trx
-ApiSettings.Local.json
+*.Development.json
 .vscode/settings.json
 force_change_encoding_recursively.ps1
 

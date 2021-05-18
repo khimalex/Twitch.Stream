@@ -1,27 +1,28 @@
 ﻿using Xunit;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Configuration;
 using Twitch.Libs.API;
 using Twitch.Libs.API.Helix;
 using System.Linq;
+using Microsoft.Extensions.Hosting;
 
 namespace Twitch.Libs.Tests
 {
     public class HelixApiTwitchTv_Tests
     {
-        private readonly ServiceProvider _sp;
+        private readonly IServiceProvider _sp;
 
         public HelixApiTwitchTv_Tests()
         {
-            var configurationBuilder = new ConfigurationBuilder();
-            configurationBuilder.AddJsonFile("appsettings.json");
-            IConfigurationRoot configuration = configurationBuilder.Build();
-            var services = new ServiceCollection();
-            services.Configure<Appsettings>(configuration);
-            services.ConfigureTwitchLibs(configuration);
-            services.AddHttpClient<IApiTwitchTv, HelixApiTwitchTv>();
-            _sp = services.BuildServiceProvider();
+            IHostBuilder host = Host.CreateDefaultBuilder().UseConsoleLifetime()
+            .ConfigureServices((c, services) =>
+            {
+                services.Configure<Appsettings>(c.Configuration);
+                services.ConfigureTwitchLibs(c.Configuration);
+                services.AddHttpClient<IApiTwitchTv, HelixApiTwitchTv>();
+
+            });
+            _sp = host.Build().Services;
 
         }
         [Theory]
@@ -40,7 +41,7 @@ namespace Twitch.Libs.Tests
         }
 
         [Theory]
-        [InlineData("juice")]
+        [InlineData("visualstudio")]
         public void GetChannelVideosAsync_Test(String channelName)
         {
             IApiTwitchTv api = _sp.GetRequiredService<IApiTwitchTv>();
@@ -53,11 +54,11 @@ namespace Twitch.Libs.Tests
         }
         [Theory]
         [InlineData("v1017740403")]
-        public void GetVideoInfoAsync_Test(String channelName)
+        public void GetVideoInfoAsync_Test(String videoId)
         {
             IApiTwitchTv api = _sp.GetRequiredService<IApiTwitchTv>();
 
-            Dto.VideosDto res = api.GetVideoInfoAsync(channelName).GetAwaiter().GetResult();
+            Dto.VideosDto res = api.GetVideoInfoAsync(videoId).GetAwaiter().GetResult();
 
             Assert.NotNull(res);
             Assert.True(res.Videos.Any());
