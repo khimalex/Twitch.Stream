@@ -36,6 +36,7 @@ internal class Build : NukeBuild
 
     [GitVersion] private readonly GitVersion GitVersion;
     [Solution] private readonly Solution Solution;
+    [Parameter] private readonly Boolean Trim;
 
     private AbsolutePath SourceDirectory => RootDirectory / "src";
 
@@ -68,6 +69,7 @@ internal class Build : NukeBuild
         });
 
     private Target Restore => _ => _
+        //.After(Clean)
         .DependsOn(Clean)
         .Executes(() =>
         {
@@ -79,6 +81,7 @@ internal class Build : NukeBuild
         });
 
     private Target Compile => _ => _
+        //.After(Restore)
         .DependsOn(Restore)
         .Executes(() =>
         {
@@ -86,11 +89,12 @@ internal class Build : NukeBuild
                 .SetProjectFile(Solution)
                 .SetConfiguration(Configuration)
                 .SetVerbosity(DotNetVerbosity.Normal)
-                .EnableNoRestore()
+                //.EnableNoRestore()
                 .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Minimal)));
         });
 
     private Target Tests => _ => _
+     //.After(Compile)
      .DependsOn(Compile)
      .Executes(() =>
      {
@@ -120,7 +124,8 @@ internal class Build : NukeBuild
      });
 
     private Target Publish => _ => _
-    .DependsOn(Tests)
+    //.After(Tests)
+    .DependsOn(Tests, Compile)
     .Executes(() =>
     {
         String[] rids = new[] { "win-x64", "win-x86" };
@@ -144,7 +149,7 @@ internal class Build : NukeBuild
                 .When("exe".Equals(project.GetOutputType(), StringComparison.InvariantCultureIgnoreCase), s => s
                     .SetPublishSingleFile(true)
                     .SetSelfContained(true)
-                    .SetPublishTrimmed(true)
+                    .SetPublishTrimmed(Trim)
                     .When(project.GetTargetFrameworks().Any(f => f.Contains("windows", StringComparison.InvariantCultureIgnoreCase)), s => s
                         .SetPublishTrimmed(false)
                         .SetPublishSingleFile(false)

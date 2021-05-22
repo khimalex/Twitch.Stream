@@ -1,21 +1,4 @@
+mode: Mainline
 assembly-versioning-scheme: MajorMinorPatch
 assembly-file-versioning-scheme: MajorMinorPatchTag
-branches:
-  main:
-    regex: ^master$|^main$
-    mode: ContinuousDelivery
-    tag: ''
-    increment: Patch
-    prevent-increment-of-merged-branch-version: true
-    track-merge-target: true
-    is-release-branch: true
-  develop:
-    regex: ^dev(elop)?(ment)?$
-    mode: ContinuousDelivery
-    tag: unstable
-    increment: Patch
-    prevent-increment-of-merged-branch-version: false
-    track-merge-target: true
-    tracks-release-branches: true
-    is-release-branch: false
-    source-branches: ['main']
+
