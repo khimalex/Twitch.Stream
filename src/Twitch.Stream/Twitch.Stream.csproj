@@ -1,8 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AppSettingsName>appsettings.json</AppSettingsName>
+  </PropertyGroup>
+
    <PropertyGroup>
       <OutputType>Exe</OutputType>
       <TargetFramework>net5.0</TargetFramework>
    </PropertyGroup>
+
    <ItemGroup>
       <PackageReference Include="AutoMapper" Version="10.1.1"/>
       <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1"/>
@@ -18,11 +23,15 @@
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
       <PackageReference Include="NLog.Extensions.Logging" Version="5.0.0-preview.1"/>
    </ItemGroup>
+
    <ItemGroup>
       <ProjectReference Include="..\Twitch.Libs\Twitch.Libs.csproj"/>
    </ItemGroup>
 
-   <Choose>
+   <ItemGroup>
+      <None Include="$(AppSettingsName)" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
+   </ItemGroup>
+   <!-- <Choose>
       <When Condition="'$(Configuration)' == 'Debug'">
          <ItemGroup>
             <None Include="appsettings.Development.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
@@ -35,7 +44,6 @@
             <None Include="appsettings.Production.json" CopyToOutputDirectory="Always" CopyToPublishDirectory="Always" />
          </ItemGroup>
       </When>
-   </Choose>
-
+   </Choose> -->
 
 </Project>
