@@ -12,6 +12,7 @@ using Twitch.Libs.API;
 using Twitch.Libs.API.Helix;
 using Twitch.Libs.API.Usher;
 using Twitch.Stream.Commands;
+using static Twitch.Stream.Startup;
 
 namespace Twitch.Stream
 {
@@ -48,17 +49,7 @@ namespace Twitch.Stream
                    services.AddScoped<IApp, DownloadVod>();
                    services.AddScoped<IApp, DownloadLast>();
                })
-               .ConfigureLogging(loggerBuilder =>
-               {
-                   loggerBuilder.ClearProviders()
-                   .AddFilter("System", LogLevel.None)
-                   .AddFilter("Microsoft", LogLevel.None)
-                   .AddFilter("Twitch.Stream", LogLevel.Information)
-                   .AddSimpleConsole(c =>
-                   {
-                       c.IncludeScopes = true;
-                   });
-               });
+               .ConfigureLogging(ConfigureLogging);
 
             CommandLineApplication<CommandsBuilder.ShortcutsBuilder> app = null;
             await builder.RunCommandLineApplicationAsync<CommandsBuilder.ShortcutsBuilder>(args, c => { app = c; });
