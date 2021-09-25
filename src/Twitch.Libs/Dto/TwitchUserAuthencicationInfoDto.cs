@@ -1,11 +1,11 @@
-﻿using System;
-namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto
 {
 
     public class TwitchUserAuthencicationInfoDto
     {
-        public String Code { get; set; }
-        public String Token { get; set; }
+        public string Code { get; set; }
+
+        public string Token { get; set; }
 
     }
 

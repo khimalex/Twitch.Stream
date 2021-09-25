@@ -14,7 +14,7 @@ namespace Twitch.Stream.CommandsBuilder
     [Command(DownloadInfoBuilder._commandName, Description = @"Показать информацию канала")]
     internal class DownloadInfoBuilder
     {
-        public const String _commandName = @"DownloadInfo";
+        public const string _commandName = @"DownloadInfo";
         private readonly IServiceProvider _serviceProvider;
 
         public DownloadInfoBuilder(IServiceProvider serviceProvider)
@@ -24,17 +24,17 @@ namespace Twitch.Stream.CommandsBuilder
 
         [Required]
         [Option("-n|--name", "Название канала последние видео которого нужно вывести", CommandOptionType.SingleValue)]
-        public String Info { get; set; }
+        public string Info { get; set; }
 
         //Not necessary parameter `CommandLineApplication`
         //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
 
-        public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
+        public async Task<int> OnExecuteAsync(CancellationToken ct = default)
         {
-            Int32 result = 0;
+            int result = 0;
             try
             {
-                if (!String.IsNullOrEmpty(Info))
+                if (!string.IsNullOrEmpty(Info))
                 {
                     IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
                     op.Value.Streams = new[] { Info };
@@ -52,6 +52,7 @@ namespace Twitch.Stream.CommandsBuilder
                 _serviceProvider.GetRequiredService<ILogger<DownloadInfoBuilder>>().LogError(e, "Произошла ошибка получения информации о канале!");
                 result = 1;
             }
+            
             return result;
         }
 

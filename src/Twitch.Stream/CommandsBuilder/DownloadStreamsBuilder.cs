@@ -13,7 +13,7 @@ namespace Twitch.Stream.CommandsBuilder
     [Command(DownloadStreamsBuilder._commandName, Description = @"Скачать стримы из файла appsettings.json")]
     internal class DownloadStreamsBuilder
     {
-        public const String _commandName = @"DownloadStreams";
+        public const string _commandName = @"DownloadStreams";
         private readonly IServiceProvider _serviceProvider;
 
         public DownloadStreamsBuilder(IServiceProvider serviceProvider)
@@ -22,17 +22,16 @@ namespace Twitch.Stream.CommandsBuilder
         }
 
         [Option("-n|--name", "Скачать заданный стрим", CommandOptionType.SingleValue)]
-        public String Name { get; set; }
-
+        public string Name { get; set; }
 
         //Not necessary parameter `CommandLineApplication`
         //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
-        public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
+        public async Task<int> OnExecuteAsync(CancellationToken ct = default)
         {
-            Int32 result = 0;
+            int result = 0;
             try
             {
-                if (!String.IsNullOrEmpty(Name))
+                if (!string.IsNullOrEmpty(Name))
                 {
                     IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
                     op.Value.Streams = new[] { Name };
@@ -46,6 +45,7 @@ namespace Twitch.Stream.CommandsBuilder
                 _serviceProvider.GetRequiredService<ILogger<DownloadStreamsBuilder>>().LogError(e, "Произошла ошибка скачивания стримов!");
                 result = 1;
             }
+            
             return result;
         }
 

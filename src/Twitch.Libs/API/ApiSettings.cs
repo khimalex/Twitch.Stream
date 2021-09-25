@@ -1,5 +1,4 @@
 ﻿using Twitch.Libs.API.Helix;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.API.Usher;
 
 namespace Twitch.Libs.API
@@ -11,7 +10,6 @@ namespace Twitch.Libs.API
         // public String ClientIDWeb { get; set; }
         // public String ClientSecret { get; set; }
 
-        public KrakenSettings KrakenSettings { get; set; }
         public HelixSettings HelixSettings { get; set; }
         public UsherSettings UsherSettings { get; set; }
     }

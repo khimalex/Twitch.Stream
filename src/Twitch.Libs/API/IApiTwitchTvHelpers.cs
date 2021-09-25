@@ -9,9 +9,9 @@ namespace Twitch.Libs.API
     {
         internal static HttpRequestMessage BuildRequest(
             HttpMethod method,
-            String requestUri,
+            string requestUri,
             HttpContent content = default,
-            Dictionary<String, String> headers = default)
+            Dictionary<string, string> headers = default)
         {
             var result = new HttpRequestMessage()
             {

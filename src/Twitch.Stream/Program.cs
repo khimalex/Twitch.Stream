@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Refit;
 using Twitch.Libs;
 using Twitch.Libs.API;
 using Twitch.Libs.API.Helix;
@@ -18,11 +20,11 @@ namespace Twitch.Stream
 {
     internal class Program
     {
-        private static void Main(String[] args)
+        private static void Main(string[] args)
         {
             MainAsync(args).GetAwaiter().GetResult();
         }
-        private static async Task MainAsync(String[] args)
+        private static async Task MainAsync(string[] args)
         {
 
             var sw = new Stopwatch();
@@ -31,7 +33,7 @@ namespace Twitch.Stream
                .ConfigureAppConfiguration((c, b) =>
                {
 #if DEBUG
-                   b.AddJsonFile($@"appsettings.{c.HostingEnvironment.EnvironmentName}.json", false, true);
+                   //b.AddJsonFile($@"appsettings.{c.HostingEnvironment.EnvironmentName}.json", false, true);
 #endif
                })
                .ConfigureServices((context, services) =>
@@ -41,7 +43,14 @@ namespace Twitch.Stream
 
                    //services.AddHttpClient<KrakenApiTwitchTv>();
                    services.AddHttpClient<IApiTwitchTv, HelixApiTwitchTv>();
-                   services.AddHttpClient<UsherTwitchTv>();
+                   services.AddRefitClient<IUsherTwitchTv>()
+                           .ConfigureHttpClient((sp, c) =>
+                           {
+                               UsherSettings usherSettings = sp.GetRequiredService<IOptions<UsherSettings>>().Value;
+                               c.BaseAddress = new Uri(@"http://usher.twitch.tv");
+                               c.DefaultRequestHeaders.TryAddWithoutValidation("Client-ID", usherSettings.ClientIDWeb);
+                           });
+                   //services.AddHttpClient<UsherTwitchTv>();
 
                    //todo: какую-нибудь бы фабричку
                    services.AddScoped<IApp, DownloadStreams>();

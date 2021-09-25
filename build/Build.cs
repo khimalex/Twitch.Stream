@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Nuke.Common;
 using Nuke.Common.CI;
 using Nuke.Common.Execution;
@@ -6,13 +8,11 @@ using Nuke.Common.IO;
 using Nuke.Common.ProjectModel;
 using Nuke.Common.Tooling;
 using Nuke.Common.Tools.DotNet;
+using Nuke.Common.Tools.GitVersion;
 using Nuke.Common.Utilities.Collections;
-using System.Linq;
 using static Nuke.Common.IO.FileSystemTasks;
 using static Nuke.Common.IO.PathConstruction;
 using static Nuke.Common.Tools.DotNet.DotNetTasks;
-using System.Collections.Generic;
-using Nuke.Common.Tools.GitVersion;
 
 [CheckBuildProjectConfigurations]
 [ShutdownDotNetAfterServerBuild]
@@ -26,7 +26,7 @@ internal class Build : NukeBuild
     ///   - Microsoft VisualStudio     https://nuke.build/visualstudio
     ///   - Microsoft VSCode           https://nuke.build/vscode
 
-    public static Int32 Main()
+    public static int Main()
     {
         return Execute<Build>(x => x.Compile);
     }
@@ -36,7 +36,7 @@ internal class Build : NukeBuild
 
     [GitVersion] private readonly GitVersion GitVersion;
     [Solution] private readonly Solution Solution;
-    [Parameter] private readonly Boolean Trim;
+    [Parameter] private readonly bool Trim;
 
     private AbsolutePath SourceDirectory => RootDirectory / "src";
 
@@ -128,7 +128,7 @@ internal class Build : NukeBuild
     .DependsOn(Tests, Compile)
     .Executes(() =>
     {
-        String[] rids = new[] { "win-x64", "win-x86" };
+        string[] rids = new[] { "win-x64", "win-x86" };
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
         .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))

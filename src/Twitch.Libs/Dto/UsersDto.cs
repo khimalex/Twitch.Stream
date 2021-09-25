@@ -4,7 +4,8 @@ namespace Twitch.Libs.Dto
 {
     public class UsersDto
     {
-        public System.Int32 Total { get; set; }
-        public List<UserDto> Users { get; set; }
+        public int Total { get; set; }
+
+        public List<UserDto> UserList { get; set; }
     }
 }

@@ -1,22 +1,38 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace Twitch.Libs.API.Helix.Models
 {
     public class User
     {
-#pragma warning disable IDE1006 // Naming Styles
-        public String id { get; set; }
-        public String login { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
 
-        public String display_name { get; set; }
-        public String type { get; set; }
-        public String broadcaster_type { get; set; }
-        public String description { get; set; }
-        public String profile_image_url { get; set; }
-        public String offline_image_url { get; set; }
-        public Int64 view_count { get; set; }
-        public String email { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
+        [JsonProperty("login")]
+        public string Login { get; set; }
+
+        [JsonProperty("display_name")]
+        public string DisplayName { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("broadcaster_type")]
+        public string BroadcasterType { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        [JsonProperty("profile_image_url")]
+        public string ProfileImageUrl { get; set; }
+
+        [JsonProperty("offline_image_url")]
+        public string OfflineImageUrl { get; set; }
+
+        [JsonProperty("view_count")]
+        public long ViewCount { get; set; }
+
+        [JsonProperty("email")]
+        public string Email { get; set; }
 
     }
 }

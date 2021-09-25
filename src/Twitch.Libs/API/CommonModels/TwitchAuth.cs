@@ -1,14 +1,17 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace Twitch.Libs.API.CommonModels
 {
     public class TwitchAuth
     {
-#pragma warning disable IDE1006 // Naming Styles
-        public String token { get; set; }
-        public String sig { get; set; }
-        public Boolean mobile_restricted { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
+        [JsonProperty("token")]
+        public string Token { get; set; }
+
+        [JsonProperty("sig")]
+        public string Sig { get; set; }
+
+        [JsonProperty("mobile_restricted")]
+        public bool MobileRestricted { get; set; }
 
     }
 }

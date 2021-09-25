@@ -1,15 +1,18 @@
-﻿using System;
-
-namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto
 {
     public class FpsDto
     {
-        public Int32 Audio_only { get; set; }
-        public Double Chunked { get; set; }
-        public Double High { get; set; }
-        public Double Low { get; set; }
-        public Double Medium { get; set; }
-        public Double Mobile { get; set; }
+        public int AudioOnly { get; set; }
+
+        public double Chunked { get; set; }
+
+        public double High { get; set; }
+
+        public double Low { get; set; }
+
+        public double Medium { get; set; }
+
+        public double Mobile { get; set; }
 
     }
 }

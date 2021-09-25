@@ -23,19 +23,19 @@ namespace Twitch.Stream.Commands
         }
         public async Task RunAsync(CancellationToken token = default)
         {
-            String channelName = _options.Streams.First();
+            string channelName = _options.Streams.First();
 
             VideosDto videos = await _apiTwitch.GetChannelVideosAsync(channelName, 100);
-            videos.Videos.Reverse();
-            foreach (VideoDto item in videos.Videos)
+            videos.VideoList.Reverse();
+            foreach (VideoDto item in videos.VideoList)
             {
-                Console.WriteLine($@"{"channel",15}: {item.Login}");
+                Console.WriteLine($@"{"channel",15}: {item.UserLogin}");
                 Console.WriteLine($@"{"id",15}: {item.Id}");
                 Console.WriteLine($@"{"type",15}: {item.Type}");
                 Console.WriteLine($@"{"title",15}: {item.Title}");
                 Console.WriteLine($@"{"game",15}: {item.Game}");
                 Console.WriteLine($@"{"DateTime",15}: {item.CreatedAt.ToLocalTime()}");
-                Console.WriteLine(new String('-', Console.WindowWidth));
+                Console.WriteLine(new string('-', Console.WindowWidth));
             }
         }
     }

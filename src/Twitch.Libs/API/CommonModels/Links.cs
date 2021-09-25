@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace Twitch.Libs.API.CommonModels
 {
     public class Links
     {
-#pragma warning disable IDE1006 // Naming Styles
-        public String self { get; set; }
-        public String channel { get; set; }
+        [JsonProperty("self")]
+        public string Self { get; set; }
 
-#pragma warning restore IDE1006 // Naming Styles
+        [JsonProperty("channel")]
+        public string Channel { get; set; }
     }
 }

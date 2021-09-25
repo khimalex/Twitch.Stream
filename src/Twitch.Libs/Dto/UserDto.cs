@@ -1,14 +1,13 @@
-﻿
-using System;
-
-namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto
 {
     public class UserDto
     {
-        public String Id { get; set; }
-        public String Name { get; set; }
-        public String Login { get; set; }
+        public string Id { get; set; }
 
-        public String Display_name { get; set; }
+        public string Name { get; set; }
+
+        public string Login { get; set; }
+
+        public string DisplayName { get; set; }
     }
 }

@@ -8,13 +8,11 @@ namespace Twitch.Libs.Profiles
     {
         public HelixVideoToVideoDtoProfile()
         {
-            CreateMap<Video, VideoDto>()
-               .ForMember(dest => dest.Login, mo => mo.MapFrom((src, dest) => src.user_login))
-               .ForMember(dest => dest.UserId, mo => mo.MapFrom((src, dest) => src.user_id))
-               .ForMember(dest => dest.CreatedAt, mo => mo.MapFrom((src, dest) => src.created_at))
-               ;
+            CreateMap<Video, VideoDto>();
+            //.ForMember(dest => dest.UserLogin, mo => mo.MapFrom((src, dest) => src.UserLogin))
+            //.ForMember(dest => dest.UserId, mo => mo.MapFrom((src, dest) => src.UserId))
+            //.ForMember(dest => dest.CreatedAt, mo => mo.MapFrom((src, dest) => src.CreatedAt))
+            //;
         }
     }
-
-
 }

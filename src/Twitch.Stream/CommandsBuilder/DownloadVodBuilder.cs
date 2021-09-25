@@ -15,7 +15,7 @@ namespace Twitch.Stream.CommandsBuilder
     [Command(DownloadVodBuilder._commandName, Description = @"Скачать видео")]
     internal class DownloadVodBuilder
     {
-        public const String _commandName = @"DownloadVod";
+        public const string _commandName = @"DownloadVod";
         private readonly IServiceProvider _serviceProvider;
 
         public DownloadVodBuilder(IServiceProvider serviceProvider)
@@ -25,13 +25,13 @@ namespace Twitch.Stream.CommandsBuilder
 
         [Required]
         [Option("-id|--id", "Идентификаторы видео которые нужно скачать (-id XXXXXX -id YYYYYYY)", CommandOptionType.MultipleValue)]
-        public List<String> Ids { get; set; } = new List<String>();
+        public List<string> Ids { get; set; } = new List<string>();
 
         //Not necessary parameter `CommandLineApplication`
         //public async Task<Int32> OnExecuteAsync(CommandLineApplication app, CancellationToken ct = default)
-        public async Task<Int32> OnExecuteAsync(CancellationToken ct = default)
+        public async Task<int> OnExecuteAsync(CancellationToken ct = default)
         {
-            Int32 result = 0;
+            int result = 0;
             try
             {
                 IOptions<Appsettings> op = _serviceProvider.GetRequiredService<IOptions<Appsettings>>();
@@ -44,9 +44,8 @@ namespace Twitch.Stream.CommandsBuilder
                 _serviceProvider.GetRequiredService<ILogger<DownloadVodBuilder>>().LogError(e, "Произошла ошибка получения видео!");
                 result = 1;
             }
+            
             return result;
         }
-
-
     }
 }

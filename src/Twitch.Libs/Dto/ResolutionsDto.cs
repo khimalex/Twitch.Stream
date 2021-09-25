@@ -1,14 +1,16 @@
-﻿using System;
-
-namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto
 {
     public class ResolutionsDto
     {
-        public String Chunked { get; set; }
-        public String High { get; set; }
-        public String Low { get; set; }
-        public String Medium { get; set; }
-        public String Mobile { get; set; }
+        public string Chunked { get; set; }
+
+        public string High { get; set; }
+
+        public string Low { get; set; }
+
+        public string Medium { get; set; }
+
+        public string Mobile { get; set; }
 
     }
 }

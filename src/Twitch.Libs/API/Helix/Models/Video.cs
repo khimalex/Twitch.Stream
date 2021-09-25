@@ -1,24 +1,44 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace Twitch.Libs.API.Helix.Models
 {
     public class Video
     {
-#pragma warning disable IDE1006 // Naming Styles
-        public String id { get; set; }
-        public String stream_id { get; set; }
-        public String user_id { get; set; }
-        public String user_login { get; set; }
-        public String user_name { get; set; }
-        public String title { get; set; }
-        public String description { get; set; }
-        public String created_at { get; set; }
-        public String published_at { get; set; }
-        public String language { get; set; }
-        public String type { get; set; }
-        public String duration { get; set; }
+        [JsonProperty("Id")]
+        public string Id { get; set; }
 
-#pragma warning restore IDE1006 // Naming Styles
+        [JsonProperty("stream_id")]
+        public string StreamId { get; set; }
+
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+
+        [JsonProperty("user_login")]
+        public string UserLogin { get; set; }
+
+        [JsonProperty("user_name")]
+        public string UserName { get; set; }
+
+        [JsonProperty("title")]
+        public string Title { get; set; }
+
+        [JsonProperty("description")]
+        public string Description { get; set; }
+
+        [JsonProperty("created_at")]
+        public string CreatedAt { get; set; }
+
+        [JsonProperty("published_at")]
+        public string PublishedAt { get; set; }
+
+        [JsonProperty("language")]
+        public string Language { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("duration")]
+        public string Duration { get; set; }
 
     }
 }

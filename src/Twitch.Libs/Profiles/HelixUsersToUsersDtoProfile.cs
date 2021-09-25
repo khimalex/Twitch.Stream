@@ -9,8 +9,8 @@ namespace Twitch.Libs.Profiles
         public HelixUsersToUsersDtoProfile()
         {
             CreateMap<Users, UsersDto>()
-               .ForMember(dest => dest.Total, mo => mo.MapFrom((src, dest) => src.data.Count))
-               .ForMember(dest => dest.Users, mo => mo.MapFrom((src, dest) => src.data));
+               .ForMember(dest => dest.Total, mo => mo.MapFrom((src, dest) => src.Data.Count))
+               .ForMember(dest => dest.UserList, mo => mo.MapFrom((src, dest) => src.Data));
         }
     }
 }

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Runtime.CompilerServices;
+﻿using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Twitch.Libs.API;
 using Twitch.Libs.API.Helix;
-using Twitch.Libs.API.Kraken;
 using Twitch.Libs.API.Usher;
 using Twitch.Libs.Exceptions.Configuration;
 using Twitch.Libs.Profiles;
@@ -43,19 +41,6 @@ namespace Twitch.Libs
                 c.AddProfile<HelixUserToUserDtoProfile>();
                 c.AddProfile<HelixVideoToVideoDtoProfile>();
                 c.AddProfile<HelixVideosToVideosDtoProfile>();
-
-                c.AddProfile<KrakenTwitchAuthToTwitchAuthDtoProfile>();
-                c.AddProfile<KrakenUsersToUsersDtoProfile>();
-                c.AddProfile<KrakenUserToUserDtoProfile>();
-                c.AddProfile<KrakenVideosToVideosDtoProfile>();
-                c.AddProfile<KrakenVideoToVideoDtoProfile>();
-                c.AddProfile<KrakenChannelToChannelDtoProfile>();
-                c.AddProfile<KrakenFpsToFpsDtoProfile>();
-                c.AddProfile<KrakenPreviewToVPreviewDtoProfile>();
-                c.AddProfile<KrakenResolutionsToResolutionsDtoProfile>();
-                c.AddProfile<KrakenThumbnailsToThumbnailsDtoProfile>();
-                c.AddProfile<KrakenThumbnailToThumbnailDtoProfile>();
-
             });
             return services;
         }
@@ -68,29 +53,25 @@ namespace Twitch.Libs
         /// <returns></returns>
         internal static IServiceCollection ConfigureTwitchApisSection(this IServiceCollection services, IConfiguration configuration)
         {
-            String sectionName = @"TwitchApis";
+            string sectionName = @"TwitchApis";
             IConfigurationSection twitchApisSection = configuration.GetSection(sectionName);
             if (!twitchApisSection.Exists())
             {
                 throw new RequiredConfigurationSectionNotEstablishedException(sectionName);
             }
-            String helixSectionName = $@"{sectionName}:{nameof(ApiSettings.HelixSettings)}";
+
+            string helixSectionName = $@"{sectionName}:{nameof(ApiSettings.HelixSettings)}";
             IConfigurationSection helixSection = configuration.GetSection(helixSectionName);
 
-            String krakenSectionName = $@"{sectionName}:{nameof(ApiSettings.KrakenSettings)}";
-            IConfigurationSection krakenSection = configuration.GetSection(krakenSectionName);
-
-            String usherSectionName = $@"{sectionName}:{nameof(ApiSettings.UsherSettings)}";
+            string usherSectionName = $@"{sectionName}:{nameof(ApiSettings.UsherSettings)}";
             IConfigurationSection usherSection = configuration.GetSection(usherSectionName);
 
             services.Configure<ApiSettings>(twitchApisSection);
             services.Configure<UsherSettings>(usherSection);
-            services.Configure<KrakenSettings>(krakenSection);
             services.Configure<HelixSettings>(helixSection);
 
             return services;
         }
-
 
         internal static IServiceCollection ConfigureJsonSerializerOptions(this IServiceCollection services, JsonSerializerSettings jsonSerializerSettings = null)
         {
@@ -106,7 +87,6 @@ namespace Twitch.Libs
         }
         internal static IServiceCollection ConfigureApiContainers(this IServiceCollection services)
         {
-            services.AddSingleton<KrakenApiConfigurationContainer>();
             services.AddSingleton<HelixApiConfigurationContainer>();
             return services;
         }

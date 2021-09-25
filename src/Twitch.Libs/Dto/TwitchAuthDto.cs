@@ -1,12 +1,12 @@
-﻿using System;
-
-namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto
 {
     public class TwitchAuthDto
     {
-        public String Token { get; set; }
-        public String Sig { get; set; }
-        public Boolean Mobile_restricted { get; set; }
+        public string Token { get; set; }
+
+        public string Sig { get; set; }
+
+        public bool MobileRestricted { get; set; }
 
     }
 }

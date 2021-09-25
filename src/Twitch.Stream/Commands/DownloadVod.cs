@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -16,9 +17,9 @@ namespace Twitch.Stream.Commands
         private readonly Appsettings _options;
         private readonly ILogger _logger;
         private readonly IApiTwitchTv _apiTwitch;
-        private readonly UsherTwitchTv _usherTwitch;
+        private readonly IUsherTwitchTv _usherTwitch;
 
-        public DownloadVod(ILogger<DownloadVod> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
+        public DownloadVod(ILogger<DownloadVod> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, IUsherTwitchTv usherTwitch)
         {
             _options = optionsAccessor.Value;
             _logger = logger;
@@ -31,21 +32,27 @@ namespace Twitch.Stream.Commands
             {
 
                 VideosDto videos = await _apiTwitch.GetVideoInfoAsync(videoId);
-                if (!videos.Videos.Any())
+                if (!videos.VideoList.Any())
                 {
                     throw new Exception($"Не найдено видео '{videoId}'.");
 
                 }
-                VideoDto video = videos.Videos.First();
+
+                VideoDto video = videos.VideoList.First();
 
                 TwitchAuthDto vodTwitchAuth = await _apiTwitch.GetVodTwitchAuthAsync(videoId);
 
-                String invalidFileName = $@"{video.Type} {video.Login} {video.Game} {video.CreatedAt.ToLocalTime()}.m3u8";
-                String validFileName = String.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));
+                string invalidFileName = $@"{video.Type} {video.UserLogin} {video.Game} {video.CreatedAt.ToLocalTime()}.m3u8";
+                string validFileName = string.Join(" ", invalidFileName.Split(Path.GetInvalidFileNameChars()));
 
-                Byte[] videoData = await _usherTwitch.GetVideoAsync(video.Id, vodTwitchAuth);
+                var query = new GetVodQueryParams { Sig = vodTwitchAuth.Sig, Token = vodTwitchAuth.Token };
 
-                await File.WriteAllBytesAsync(validFileName, videoData);
+                HttpContent httpContent = await _usherTwitch.GetVodAsync(video.Id, query);
+
+                byte[] bytes = await httpContent.ReadAsByteArrayAsync(token);
+
+                await File.WriteAllBytesAsync(validFileName, bytes, token);
+
                 _logger.LogInformation("Видео '{0}' загружено", validFileName);
 
             });

@@ -1,16 +1,23 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 
 namespace Twitch.Libs.API.CommonModels
 {
     public class Resolutions
     {
-#pragma warning disable IDE1006 // Naming Styles
-        public String chunked { get; set; }
-        public String high { get; set; }
-        public String low { get; set; }
-        public String medium { get; set; }
-        public String mobile { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
+        [JsonProperty("chunked")]
+        public string Chunked { get; set; }
+
+        [JsonProperty("high")]
+        public string High { get; set; }
+
+        [JsonProperty("low")]
+        public string Low { get; set; }
+
+        [JsonProperty("medium")]
+        public string Medium { get; set; }
+
+        [JsonProperty("mobile")]
+        public string Mobile { get; set; }
 
     }
 }

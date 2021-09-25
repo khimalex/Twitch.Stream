@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -16,9 +17,9 @@ namespace Twitch.Stream.Commands
         private readonly Appsettings _optionsAccessor;
         private readonly ILogger<DownloadStreams> _logger;
         private readonly IApiTwitchTv _apiTwitch;
-        private readonly UsherTwitchTv _usherTwitch;
+        private readonly IUsherTwitchTv _usherTwitch;
 
-        public DownloadStreams(ILogger<DownloadStreams> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, UsherTwitchTv usherTwitch)
+        public DownloadStreams(ILogger<DownloadStreams> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, IUsherTwitchTv usherTwitch)
         {
             _optionsAccessor = optionsAccessor.Value;
             _logger = logger;
@@ -36,7 +37,7 @@ namespace Twitch.Stream.Commands
             {
                 try
                 {
-                    String fileName = $"{user}.m3u8";
+                    string fileName = $"{user}.m3u8";
                     if (File.Exists(fileName))
                     {
                         File.Delete(fileName);
@@ -44,8 +45,19 @@ namespace Twitch.Stream.Commands
 
                     //var twitchauth = await _helixApiTwitchTv.GetChannelTwitchAuthAsync(user);
                     TwitchAuthDto twitchauth = await _apiTwitch.GetChannelTwitchAuthAsync(user);
-                    Byte[] stream = await _usherTwitch.GetStreamAsync(user, twitchauth);
-                    await File.WriteAllBytesAsync(fileName, stream);
+
+                    var query = new GetStreamQueryParams
+                    {
+                        Sig = twitchauth.Sig,
+                        Token = twitchauth.Token
+                    };
+
+                    HttpContent httpContent = await _usherTwitch.GetStreamAsync(user, query);
+                    
+                    byte[] bytes = await httpContent.ReadAsByteArrayAsync(token);
+                    
+                    await File.WriteAllBytesAsync(fileName, bytes);
+                    
                     _logger.LogInformation("Стрим '{user}' загружен в '{file}'!", user, fileName);
                 }
                 catch (Exception e)

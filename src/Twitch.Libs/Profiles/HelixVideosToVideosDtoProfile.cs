@@ -9,8 +9,8 @@ namespace Twitch.Libs.Profiles
         public HelixVideosToVideosDtoProfile()
         {
             CreateMap<Videos, VideosDto>()
-               .ForMember(dest => dest.Total, mo => mo.MapFrom((src, dest) => src.Data.Count))
-               .ForMember(dest => dest.Videos, mo => mo.MapFrom((src, dest) => src.Data))
+               .ForMember(dest => dest.Total, mo => mo.MapFrom((src, dest) => src.VideoList.Count))
+               .ForMember(dest => dest.VideoList, mo => mo.MapFrom((src, dest) => src.VideoList))
                ;
         }
     }

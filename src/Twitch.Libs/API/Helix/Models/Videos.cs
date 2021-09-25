@@ -6,7 +6,7 @@ namespace Twitch.Libs.API.Helix.Models
     public class Videos
     {
         [JsonProperty("data")]
-        public List<Video> Data { get; set; }
+        public List<Video> VideoList { get; set; }
 
     }
 }
