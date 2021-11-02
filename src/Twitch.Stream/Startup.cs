@@ -12,9 +12,9 @@ namespace Twitch.Stream
         public static void ConfigureLogging(HostBuilderContext context, ILoggingBuilder loggingBuilder)
         {
 
-            loggingBuilder.ClearProviders()
-            .SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace)
-            .AddNLog(GetLoggingConfiguration());
+            _ = loggingBuilder.ClearProviders()
+                .SetMinimumLevel(LogLevel.Trace)
+                .AddNLog(GetLoggingConfiguration());
 
             LoggingConfiguration GetLoggingConfiguration()
             {
@@ -32,16 +32,6 @@ namespace Twitch.Stream
                 loggingConfiguration.AddRule(NLog.LogLevel.Info,
                                              NLog.LogLevel.Fatal,
                                              "console", "Twitch.*");
-
-                // loggingConfiguration.AddRule(NLog.LogLevel.Off,
-                //                              NLog.LogLevel.Off,
-                //                              "blackhole",
-                //                              "System");
-
-                // loggingConfiguration.AddRule(NLog.LogLevel.Off,
-                //                              NLog.LogLevel.Off,
-                //                              "blackhole",
-                //                              "Microsoft");
 
                 return loggingConfiguration;
             }

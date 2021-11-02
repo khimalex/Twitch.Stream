@@ -74,9 +74,9 @@ internal class Build : NukeBuild
         .Executes(() =>
         {
             DotNetRestore(s => s
-                .SetProjectFile(Solution)
-                .SetVerbosity(DotNetVerbosity.Normal)
-                .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
+                  .SetProjectFile(Solution)
+                  .SetVerbosity(DotNetVerbosity.Normal)
+                  .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
 
         });
 

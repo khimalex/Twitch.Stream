@@ -21,10 +21,10 @@ namespace Twitch.Libs
 
         public static IServiceCollection ConfigureTwitchLibs(this IServiceCollection services, IConfiguration configuration, JsonSerializerSettings jsonSerializerSettings = null)
         {
-            services.ConfigureAutoMapper();
-            services.ConfigureTwitchApisSection(configuration);
-            services.ConfigureJsonSerializerOptions(jsonSerializerSettings);
-            services.ConfigureApiContainers();
+            _ = services.ConfigureAutoMapper()
+            .ConfigureTwitchApisSection(configuration)
+            .ConfigureJsonSerializerOptions(jsonSerializerSettings)
+            .ConfigureApiContainers();
 
             return services;
         }
@@ -34,7 +34,7 @@ namespace Twitch.Libs
             //Don't need checking double registration, as i think...
             //Developers checked it already, see here:
             //https://github.com/AutoMapper/AutoMapper.Extensions.Microsoft.DependencyInjection/blob/be2b8cdb0b52d92fe873f0a7d1baacdd9fe0e5aa/src/AutoMapper.Extensions.Microsoft.DependencyInjection/ServiceCollectionExtensions.cs#L103
-            services.AddAutoMapper(c =>
+            _ = services.AddAutoMapper(c =>
             {
                 c.AddProfile<HelixTwitchAuthToTwitchAuthDtoProfile>();
                 c.AddProfile<HelixUsersToUsersDtoProfile>();
@@ -66,9 +66,9 @@ namespace Twitch.Libs
             string usherSectionName = $@"{sectionName}:{nameof(ApiSettings.UsherSettings)}";
             IConfigurationSection usherSection = configuration.GetSection(usherSectionName);
 
-            services.Configure<ApiSettings>(twitchApisSection);
-            services.Configure<UsherSettings>(usherSection);
-            services.Configure<HelixSettings>(helixSection);
+            _ = services.Configure<ApiSettings>(twitchApisSection)
+                .Configure<UsherSettings>(usherSection)
+                .Configure<HelixSettings>(helixSection);
 
             return services;
         }
@@ -81,14 +81,13 @@ namespace Twitch.Libs
                 Converters = { new StringEnumConverter() }
 
             };
-            services.AddSingleton(jsonSerializerSettings.GetType(), jsonSerializerSettings);
-            return services;
+            return services.AddSingleton(jsonSerializerSettings.GetType(), jsonSerializerSettings);
+            
 
         }
         internal static IServiceCollection ConfigureApiContainers(this IServiceCollection services)
         {
-            services.AddSingleton<HelixApiConfigurationContainer>();
-            return services;
+            return services.AddSingleton<HelixApiConfigurationContainer>();
         }
     }
 }
