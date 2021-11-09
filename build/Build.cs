@@ -40,7 +40,6 @@ internal class Build : NukeBuild
 
     private AbsolutePath SourceDirectory => RootDirectory / "src";
 
-    //private AbsolutePath TestsDirectory => SourceDirectory / "Twitch.Libs.Tests";
     private AbsolutePath TestsDirectoryResult => RootDirectory / "tests";
 
     private AbsolutePath OutputDirectory => RootDirectory / "output";
@@ -76,7 +75,7 @@ internal class Build : NukeBuild
             DotNetRestore(s => s
                   .SetProjectFile(Solution)
                   .SetVerbosity(DotNetVerbosity.Normal)
-                  .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
+                  .When(InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Quiet)));
 
         });
 
@@ -90,51 +89,17 @@ internal class Build : NukeBuild
                 .SetConfiguration(Configuration)
                 .SetVerbosity(DotNetVerbosity.Normal)
                 //.EnableNoRestore()
-                .When(InvokedTargets.Contains(Tests) || InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Minimal)));
+                .When(InvokedTargets.Contains(Publish), ss => ss.SetVerbosity(DotNetVerbosity.Minimal)));
         });
 
-    private Target Tests => _ => _
-     //.After(Compile)
-     .DependsOn(Compile)
-     .Executes(() =>
-     {
-         IEnumerable<Project> testProjects = Solution.AllProjects
-         .Where(p => p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase));
-
-         DotNetTest(s => s
-            .SetVerbosity(DotNetVerbosity.Normal)
-            .SetConfiguration(Configuration)
-            .When(Configuration == Configuration.Debug, s => s
-                .AddProcessEnvironmentVariable("DOTNET_ENVIRONMENT", "Development")
-            )
-            //.SetConfiguration(Configuration)
-            .CombineWith(testProjects, (s, p) =>
-                {
-                    EnsureExistingDirectory(TestsDirectoryResult / p.Name);
-                    return s
-                       .SetProjectFile(p)
-                       .SetLogger($@"""trx;LogFileName={DateTime.Now:yyyy-MM-dd HH-mm-ss}.trx""")
-                       .SetProcessLogOutput(true)
-                       .SetProcessLogTimestamp(true)
-                       .SetProcessLogFile(TestsDirectoryResult / p.Name / $@"{DateTime.Now:yyyy-MM-dd HH-mm-ss}.log")
-                       .SetResultsDirectory(TestsDirectoryResult / p.Name);
-                }
-            )
-        );
-     });
-
     private Target Publish => _ => _
-    //.After(Tests)
-    .DependsOn(Tests, Compile)
+    .DependsOn(Compile)
     .Executes(() =>
     {
         string[] rids = new[] { "win-x64", "win-x86" };
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
         .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))
-        //.Where(p=> p.GetOutputType().Contains("exe"))
-        ;
-
         DotNetPublish(s => s
             .SetConfiguration(Configuration)
             .SetVerbosity(DotNetVerbosity.Quiet)
@@ -157,6 +122,8 @@ internal class Build : NukeBuild
                 )
                 .CombineWith(rids, (s, rid) => s
                     .SetRuntime(rid)
+                    .SetSelfContained(true)
+                    .SetPublishTrimmed(true)
                     .SetOutput(OutputDirectory / project.Name / Configuration / rid)
                 )
             )
