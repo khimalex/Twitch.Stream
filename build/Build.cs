@@ -99,7 +99,7 @@ internal class Build : NukeBuild
         string[] rids = new[] { "win-x64", "win-x86" };
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
-        .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))
+        .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase));
         DotNetPublish(s => s
             .SetConfiguration(Configuration)
             .SetVerbosity(DotNetVerbosity.Quiet)
