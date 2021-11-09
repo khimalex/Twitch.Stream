@@ -99,7 +99,8 @@ internal class Build : NukeBuild
         string[] rids = new[] { "win-x64", "win-x86" };
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
-        .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase));
+        .Where(p => !p.Name.Contains('_', StringComparison.InvariantCultureIgnoreCase));
+        
         DotNetPublish(s => s
             .SetConfiguration(Configuration)
             .SetVerbosity(DotNetVerbosity.Quiet)
@@ -108,7 +109,6 @@ internal class Build : NukeBuild
             .SetFileVersion(GitVersion.AssemblySemFileVer)
             .SetInformationalVersion(GitVersion.InformationalVersion)
             .SetAuthors("KhimAlex")
-            .AddProperty("IncludeNativeLibrariesForSelfExtract", true)
             .CombineWith(publishProjects, (s, project) => s
                 .SetProject(project)
                 .When("exe".Equals(project.GetOutputType(), StringComparison.InvariantCultureIgnoreCase), s => s
@@ -122,8 +122,6 @@ internal class Build : NukeBuild
                 )
                 .CombineWith(rids, (s, rid) => s
                     .SetRuntime(rid)
-                    .SetSelfContained(true)
-                    .SetPublishTrimmed(true)
                     .SetOutput(OutputDirectory / project.Name / Configuration / rid)
                 )
             )

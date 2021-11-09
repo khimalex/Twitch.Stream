@@ -18,22 +18,6 @@
       "group": "build"
     },
     {
-      "label": "restore",
-      "type": "process",
-      "command": "./build.cmd",
-      "windows": {
-        "command": "./build.cmd",
-        "args": [
-          "--target",
-          "Restore",
-          "--configuration",
-          "Debug"
-        ]
-      },
-      "problemMatcher": "$msCompile",
-      "group": "build"
-    },
-    {
       "label": "publish",
       "type": "process",
       "command": "./build.cmd",
@@ -43,40 +27,11 @@
           "--target",
           "Publish",
           "--configuration",
-          "Debug"
+          "Release",
+          "--trim"
         ]
       },
       "problemMatcher": "$msCompile",
-    },
-    {
-      "label": "tests",
-      "type": "process",
-      "command": "./build.cmd",
-      "windows": {
-        "command": "./build.cmd",
-        "args": [
-          "--target",
-          "Tests",
-          "--configuration",
-          "Debug"
-        ]
-      },
-      "group": "test"
-    },
-    {
-      "label": "tests Release",
-      "type": "process",
-      "command": "./build.cmd",
-      "windows": {
-        "command": "./build.cmd",
-        "args": [
-          "--target",
-          "Tests",
-          "--configuration",
-          "Release"
-        ],
-      },
-      "group": "test"
     },
     {
       "label": "watch",
