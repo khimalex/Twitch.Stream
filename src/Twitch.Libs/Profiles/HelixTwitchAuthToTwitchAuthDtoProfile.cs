@@ -2,35 +2,28 @@
 using Twitch.Libs.API.Helix.Models;
 using Twitch.Libs.Dto;
 
-namespace Twitch.Libs.Profiles
+namespace Twitch.Libs.Profiles;
+
+internal class HelixTwitchAuthToTwitchAuthDtoProfile : Profile
 {
-    internal class HelixTwitchAuthToTwitchAuthDtoProfile : Profile
+    public HelixTwitchAuthToTwitchAuthDtoProfile()
     {
-        public HelixTwitchAuthToTwitchAuthDtoProfile()
-        {
-            CreateMap<TwitchAuth, TwitchAuthDto>()
-               .ForMember(dest => dest.Sig, mo => mo.MapFrom((src, dest) =>
+        _ = CreateMap<TwitchAuth, TwitchAuthDto>()
+           .ForMember(dest => dest.Sig, mo => mo.MapFrom((src, dest) =>
+           {
+               return src.Data.StreamPlaybackAccessToken switch
                {
-                   if (src.Data.StreamPlaybackAccessToken is not null)
-                   {
-                       return src.Data.StreamPlaybackAccessToken.Signature;
-                   }
-                   else
-                   {
-                       return src.Data.VideoPlaybackAccessToken.Signature;
-                   }
-               }))
-               .ForMember(dest => dest.Token, mo => mo.MapFrom((src, dest) =>
+                   not null => src.Data.StreamPlaybackAccessToken.Signature,
+                   _ => src.Data.VideoPlaybackAccessToken.Signature
+               };
+           }))
+           .ForMember(dest => dest.Token, mo => mo.MapFrom((src, dest) =>
+           {
+               return src.Data.StreamPlaybackAccessToken switch
                {
-                   if (src.Data.StreamPlaybackAccessToken is not null)
-                   {
-                       return src.Data.StreamPlaybackAccessToken.Value;
-                   }
-                   else
-                   {
-                       return src.Data.VideoPlaybackAccessToken.Value;
-                   }
-               }));
-        }
+                   not null => src.Data.StreamPlaybackAccessToken.Value,
+                   _ => src.Data.VideoPlaybackAccessToken.Value
+               };
+           }));
     }
 }

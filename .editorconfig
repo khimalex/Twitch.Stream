@@ -8,7 +8,6 @@ insert_final_newline = false
 charset = utf-8-bom
 tab_width=2
 indent_size=2
-dotnet_diagnostic.CA1707.severity=warning
 
 
 # XML project files
@@ -31,8 +30,15 @@ end_of_line = crlf
 indent_size = 4
 tab_width = 4
 
-#### .NET Coding Conventions ####
+### IDE Conventions ###
+# IDE0052: Remove unread private member
+dotnet_diagnostic.IDE0052.severity = none
+# IDE0060: Remove unused parameter
+dotnet_diagnostic.IDE0060.severity = none
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity=warning
 
+#### .NET Coding Conventions ####
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = true
@@ -79,7 +85,7 @@ dotnet_style_prefer_simplified_interpolation = true
 dotnet_style_readonly_field = true
 
 # Parameter preferences
-dotnet_code_quality_unused_parameters = non_public
+# dotnet_code_quality_unused_parameters = non_public:ignore
 
 # Suppression preferences
 dotnet_remove_unnecessary_suppression_exclusions = none
@@ -122,7 +128,7 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 # Code-block preferences
 csharp_prefer_braces = when_multiline:warning
 csharp_prefer_simple_using_statement = true:warning
-csharp_style_namespace_declarations = block_scoped:warning
+csharp_style_namespace_declarations = file_scoped:warning
 
 # Expression-level preferences
 csharp_prefer_simple_default_expression = true:warning

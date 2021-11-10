@@ -1,10 +1,9 @@
-﻿namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto;
+
+public class ThumbnailDto
 {
-    public class ThumbnailDto
-    {
-        public string Url { get; set; }
+    public string Url { get; set; }
 
-        public string Type { get; set; }
+    public string Type { get; set; }
 
-    }
 }

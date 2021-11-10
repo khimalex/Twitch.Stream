@@ -2,13 +2,12 @@
 using Twitch.Libs.API.Helix.Models;
 using Twitch.Libs.Dto;
 
-namespace Twitch.Libs.Profiles
+namespace Twitch.Libs.Profiles;
+
+internal class HelixUserToUserDtoProfile : Profile
 {
-    internal class HelixUserToUserDtoProfile : Profile
+    public HelixUserToUserDtoProfile()
     {
-        public HelixUserToUserDtoProfile()
-        {
-            CreateMap<User, UserDto>();
-        }
+        _ = CreateMap<User, UserDto>();
     }
 }

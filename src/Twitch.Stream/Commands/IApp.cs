@@ -1,10 +1,6 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿namespace Twitch.Stream.Commands;
 
-namespace Twitch.Stream.Commands
+internal interface IApp
 {
-    internal interface IApp
-    {
-        Task RunAsync(CancellationToken token = default);
-    }
+    Task RunAsync(CancellationToken token = default);
 }

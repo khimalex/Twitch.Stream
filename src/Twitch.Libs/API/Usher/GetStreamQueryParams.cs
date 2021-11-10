@@ -1,33 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Refit;
+﻿using Refit;
 
-namespace Twitch.Libs.API.Usher
+namespace Twitch.Libs.API.Usher;
+
+public class GetStreamQueryParams
 {
-    public class GetStreamQueryParams
-    {
-        [AliasAs("player")]
-        public string Player { get; set; } = "twitchweb";
+    [AliasAs("player")]
+    public string Player { get; set; } = "twitchweb";
 
-        [AliasAs("token")]
-        public string Token { get; set; }
+    [AliasAs("token")]
+    public string Token { get; set; }
 
-        [AliasAs("sig")]
-        public string Sig { get; set; }
+    [AliasAs("sig")]
+    public string Sig { get; set; }
 
-        [AliasAs("allow_audio_only")]
-        public bool AllowAudioOnly { get; set; } = true;
-     
-        [AliasAs("allow_source")]
-        public bool AllowSource { get; set; } = true;
+    [AliasAs("allow_audio_only")]
+    public bool AllowAudioOnly { get; set; } = true;
 
-        [AliasAs("type")]
-        public string Type { get; set; } = "any";
+    [AliasAs("allow_source")]
+    public bool AllowSource { get; set; } = true;
 
-        [AliasAs("p")]
-        public string P { get; set; } = "2301211'";
-    }
+    [AliasAs("type")]
+    public string Type { get; set; } = "any";
+
+    [AliasAs("p")]
+    public string P { get; set; } = "2301211'";
 }

@@ -1,12 +1,9 @@
-﻿namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto;
+
+public class TwitchUserAuthencicationInfoDto
 {
+    public string Code { get; set; }
 
-    public class TwitchUserAuthencicationInfoDto
-    {
-        public string Code { get; set; }
-
-        public string Token { get; set; }
-
-    }
+    public string Token { get; set; }
 
 }

@@ -48,7 +48,7 @@ internal class Build : NukeBuild
         .Executes(() =>
         {
             Solution.AllProjects
-            .Where(p => !p.Name.Contains("_", StringComparison.InvariantCultureIgnoreCase))
+            .Where(p => !p.Name.Contains('_', StringComparison.InvariantCultureIgnoreCase))
             .SelectMany(p => p.Directory.GlobDirectories("**/bin", "**/obj"))
             .ForEach(DeleteDirectory);
             DeleteDirectory(OutputDirectory);
@@ -100,7 +100,7 @@ internal class Build : NukeBuild
         IEnumerable<Project> publishProjects = Solution.AllProjects
         .Where(p => !p.Name.Contains("test", StringComparison.InvariantCultureIgnoreCase))
         .Where(p => !p.Name.Contains('_', StringComparison.InvariantCultureIgnoreCase));
-        
+
         DotNetPublish(s => s
             .SetConfiguration(Configuration)
             .SetVerbosity(DotNetVerbosity.Quiet)

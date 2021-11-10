@@ -3,26 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 
-namespace Twitch.Libs.API
+namespace Twitch.Libs.API;
+
+public class IApiTwitchTvHelpers
 {
-    public class IApiTwitchTvHelpers
+    internal static HttpRequestMessage BuildRequest(
+        HttpMethod method,
+        string requestUri,
+        HttpContent content = default,
+        Dictionary<string, string> headers = default)
     {
-        internal static HttpRequestMessage BuildRequest(
-            HttpMethod method,
-            string requestUri,
-            HttpContent content = default,
-            Dictionary<string, string> headers = default)
+        var result = new HttpRequestMessage()
         {
-            var result = new HttpRequestMessage()
-            {
-                RequestUri = new Uri(requestUri),
-                Method = method,
-                Content = content,
-            };
+            RequestUri = new Uri(requestUri),
+            Method = method,
+            Content = content,
+        };
 
-            headers?.ToList().ForEach(h => result.Headers.TryAddWithoutValidation(h.Key, h.Value));
+        headers?.ToList().ForEach(h => result.Headers.TryAddWithoutValidation(h.Key, h.Value));
 
-            return result;
-        }
+        return result;
     }
 }

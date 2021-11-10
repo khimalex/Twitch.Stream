@@ -1,16 +1,15 @@
 ﻿using Newtonsoft.Json;
 
-namespace Twitch.Libs.API.CommonModels
+namespace Twitch.Libs.API.CommonModels;
+
+internal class ErrorResponse
 {
-    internal class ErrorResponse
-    {
-        [JsonProperty("error")]
-        public string Error { get; set; }
+    [JsonProperty("error")]
+    public string Error { get; set; }
 
-        [JsonProperty("status")]
-        public int Status { get; set; }
+    [JsonProperty("status")]
+    public int Status { get; set; }
 
-        [JsonProperty("message")]
-        public string Message { get; set; }
-    }
+    [JsonProperty("message")]
+    public string Message { get; set; }
 }

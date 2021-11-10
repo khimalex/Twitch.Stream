@@ -1,13 +1,12 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace Twitch.Libs.API.Helix.Models
+namespace Twitch.Libs.API.Helix.Models;
+
+public class Data
 {
-    public class Data
-    {
-        [JsonProperty("streamPlaybackAccessToken")]
-        public PlaybackAccessToken StreamPlaybackAccessToken { get; set; }
-        [JsonProperty("videoPlaybackAccessToken")]
-        public PlaybackAccessToken VideoPlaybackAccessToken { get; set; }
-    }
+    [JsonProperty("streamPlaybackAccessToken")]
+    public PlaybackAccessToken StreamPlaybackAccessToken { get; set; }
+    [JsonProperty("videoPlaybackAccessToken")]
+    public PlaybackAccessToken VideoPlaybackAccessToken { get; set; }
 }

@@ -1,11 +1,7 @@
-﻿using Twitch.Libs.API;
+﻿namespace Twitch.Stream;
 
-namespace Twitch.Stream
+public class Appsettings
 {
-    public class Appsettings
-    {
-        public ApiSettings TwitchApis { get; set; }
-        public string[] Streams { get; set; }
-    }
-
+    public ApiSettings TwitchApis { get; set; }
+    public string[] Streams { get; set; }
 }

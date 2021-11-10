@@ -1,16 +1,15 @@
-﻿namespace Twitch.Libs.Dto
+﻿namespace Twitch.Libs.Dto;
+
+public class ResolutionsDto
 {
-    public class ResolutionsDto
-    {
-        public string Chunked { get; set; }
+    public string Chunked { get; set; }
 
-        public string High { get; set; }
+    public string High { get; set; }
 
-        public string Low { get; set; }
+    public string Low { get; set; }
 
-        public string Medium { get; set; }
+    public string Medium { get; set; }
 
-        public string Mobile { get; set; }
+    public string Mobile { get; set; }
 
-    }
 }

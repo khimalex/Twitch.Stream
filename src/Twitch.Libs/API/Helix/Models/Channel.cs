@@ -1,14 +1,13 @@
 ﻿using Newtonsoft.Json;
 
-namespace Twitch.Libs.API.Helix.Models
+namespace Twitch.Libs.API.Helix.Models;
+
+public class Channel
 {
-    public class Channel
-    {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+    [JsonProperty("name")]
+    public string Name { get; set; }
 
-        [JsonProperty("display_name")]
-        public string DisplayName { get; set; }
+    [JsonProperty("display_name")]
+    public string DisplayName { get; set; }
 
-    }
 }
