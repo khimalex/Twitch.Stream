@@ -1,4 +1,5 @@
 ﻿using static Twitch.Stream.Startup;
+using Twitch.Stream.CommandsArgs;
 
 var sw = new Stopwatch();
 sw.Start();
@@ -11,10 +12,12 @@ IHostBuilder builder = Host.CreateDefaultBuilder().UseConsoleLifetime()
    })
    .ConfigureServices((context, services) =>
    {
+
+       services.AddMediatRAndHandlers();
+
        services.Configure<Appsettings>(context.Configuration);
        services.ConfigureTwitchLibs(context.Configuration);
 
-       //services.AddHttpClient<KrakenApiTwitchTv>();
        services.AddHttpClient<IApiTwitchTv, HelixApiTwitchTv>();
        services.AddRefitClient<IUsherTwitchTv>()
        .ConfigureHttpClient((sp, c) =>
@@ -23,13 +26,7 @@ IHostBuilder builder = Host.CreateDefaultBuilder().UseConsoleLifetime()
            c.BaseAddress = new Uri(@"http://usher.twitch.tv");
            c.DefaultRequestHeaders.TryAddWithoutValidation("Client-ID", usherSettings.ClientIDWeb);
        });
-       //services.AddHttpClient<UsherTwitchTv>();
 
-       //todo: какую-нибудь бы фабричку
-       services.AddScoped<IApp, DownloadStreams>();
-       services.AddScoped<IApp, DownloadInfo>();
-       services.AddScoped<IApp, DownloadVod>();
-       services.AddScoped<IApp, DownloadLast>();
    })
    .ConfigureLogging(ConfigureLogging);
 

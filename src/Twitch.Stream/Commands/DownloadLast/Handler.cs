@@ -1,15 +1,15 @@
 ﻿using Twitch.Libs.Dto;
 
-namespace Twitch.Stream.Commands;
+namespace Twitch.Stream.Commands.DownloadLast;
 
-internal class DownloadLast : IApp
+internal class Handler : IRequestHandler<Request, Response>
 {
     private readonly ILogger _logger;
     private readonly IApiTwitchTv _apiTwitch;
     private readonly IUsherTwitchTv _usherTwitch;
     private readonly Appsettings _options;
 
-    public DownloadLast(ILogger<DownloadInfo> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, IUsherTwitchTv usherTwitch)
+    public Handler(ILogger<Handler> logger, IOptions<Appsettings> optionsAccessor, IApiTwitchTv apiTwitch, IUsherTwitchTv usherTwitch)
     {
         _logger = logger;
         _apiTwitch = apiTwitch;
@@ -17,9 +17,9 @@ internal class DownloadLast : IApp
         _options = optionsAccessor.Value;
     }
 
-    public async Task RunAsync(CancellationToken token = default)
+    public async Task<Response> Handle(Request request, CancellationToken cancellationToken)
     {
-        string channelName = _options.Streams.First();
+        string channelName = request.ChannelName;
 
         VideosDto videos = await _apiTwitch.GetChannelVideosAsync(channelName, 100);
 
@@ -38,12 +38,13 @@ internal class DownloadLast : IApp
 
         HttpContent httpContent = await _usherTwitch.GetVodAsync(lastVideo.Id, query);
 
-        byte[] bytes = await httpContent.ReadAsByteArrayAsync(token);
+        byte[] bytes = await httpContent.ReadAsByteArrayAsync(cancellationToken);
 
-        await File.WriteAllBytesAsync(validFileName, bytes, token);
+        await File.WriteAllBytesAsync(validFileName, bytes, cancellationToken);
 
-        const string message = @"Последнее видео канала '{ChannelName}' '{FileName}' загружено";
-
-        _logger.LogInformation(message, channelName, validFileName);
+        return new Response()
+        {
+            FileName = validFileName
+        };
     }
 }

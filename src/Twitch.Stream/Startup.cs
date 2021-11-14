@@ -1,4 +1,6 @@
-﻿namespace Twitch.Stream;
+﻿using System.Reflection;
+
+namespace Twitch.Stream;
 
 internal static class Startup
 {
@@ -28,5 +30,14 @@ internal static class Startup
             return loggingConfiguration;
         }
 
+    }
+
+    public static IServiceCollection AddMediatRAndHandlers(this IServiceCollection services)
+    {
+        return services.AddMediatR(Assembly.GetExecutingAssembly())
+        .AddScoped(typeof(IPipelineBehavior<Commands.DownloadStreams.Request, Commands.DownloadStreams.Response>), typeof(Commands.DownloadStreams.SuccessHandler))
+        .AddScoped(typeof(IPipelineBehavior<Commands.DownloadVod.Request, Commands.DownloadVod.Response>), typeof(Commands.DownloadVod.SuccessHandler))
+        .AddScoped(typeof(IPipelineBehavior<Commands.DownloadInfo.Request, Commands.DownloadInfo.Response>), typeof(Commands.DownloadInfo.SuccessHandler))
+        .AddScoped(typeof(IPipelineBehavior<Commands.DownloadLast.Request, Commands.DownloadLast.Response>), typeof(Commands.DownloadLast.SuccessHandler));
     }
 }
